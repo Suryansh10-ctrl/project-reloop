@@ -19,38 +19,51 @@ import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 export default function Home() {
   const featuredProducts = products.slice(0, 4);
+  const heroImage = PlaceHolderImages.find((img) => img.id === 'hero');
 
   return (
     <div className="flex flex-col min-h-[100dvh]">
       <section className="w-full py-20 md:py-32 lg:py-40 bg-background">
         <div className="container px-4 md:px-6">
-          <div className="flex flex-col items-center justify-center space-y-4 text-center">
-            <div className="space-y-2">
-              <h1 className="text-4xl font-headline font-bold tracking-tight text-primary sm:text-5xl md:text-6xl">
-                Reloop: Waste to Wonder
-              </h1>
-              <p className="max-w-[600px] text-muted-foreground md:text-xl">
-                Turn your unwanted items into treasures. Connect with local
-                artisans, discover unique upcycled products, and make a positive
-                impact.
-              </p>
+          <div className="grid gap-6 lg:grid-cols-2 lg:gap-12 xl:grid-cols-2">
+            <div className="flex flex-col justify-center space-y-4">
+              <div className="space-y-2">
+                <h1 className="text-4xl font-headline font-bold tracking-tight text-primary sm:text-5xl md:text-6xl text-center lg:text-left">
+                  Reloop: Waste to Wonder
+                </h1>
+                <p className="max-w-[600px] text-muted-foreground md:text-xl mx-auto lg:mx-0 text-center lg:text-left">
+                  Turn your unwanted items into treasures. Connect with local
+                  artisans, discover unique upcycled products, and make a positive
+                  impact.
+                </p>
+              </div>
+              <div className="flex flex-col gap-2 min-[400px]:flex-row justify-center lg:justify-start">
+                <Button
+                  asChild
+                  size="lg"
+                  className="bg-accent text-accent-foreground hover:bg-accent/90"
+                >
+                  <Link href="/marketplace">
+                    Find Treasures <ShoppingBag className="ml-2 h-5 w-5" />
+                  </Link>
+                </Button>
+                <Button asChild size="lg" variant="secondary">
+                  <Link href="/give">
+                    Give Waste <Recycle className="ml-2 h-5 w-5" />
+                  </Link>
+                </Button>
+              </div>
             </div>
-            <div className="flex flex-col gap-2 min-[400px]:flex-row">
-              <Button
-                asChild
-                size="lg"
-                className="bg-accent text-accent-foreground hover:bg-accent/90"
-              >
-                <Link href="/marketplace">
-                  Find Treasures <ShoppingBag className="ml-2 h-5 w-5" />
-                </Link>
-              </Button>
-              <Button asChild size="lg" variant="secondary">
-                <Link href="/give">
-                  Give Waste <Recycle className="ml-2 h-5 w-5" />
-                </Link>
-              </Button>
-            </div>
+            {heroImage && (
+              <Image
+                src={heroImage.imageUrl}
+                alt={heroImage.description}
+                width="600"
+                height="400"
+                className="mx-auto aspect-video overflow-hidden rounded-xl object-contain sm:w-full lg:order-last"
+                data-ai-hint={heroImage.imageHint}
+              />
+            )}
           </div>
         </div>
       </section>
