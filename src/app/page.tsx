@@ -24,44 +24,46 @@ export default function Home() {
 
   return (
     <div className="flex flex-col min-h-[100dvh]">
-      <section className="relative w-full py-20 md:py-32 lg:py-40">
-        <div className="absolute inset-0 bg-black/50 z-0">
-          {heroImage && (
-            <Image
-              src={heroImage.imageUrl}
-              alt={heroImage.description}
-              fill
-              className="object-cover -z-10"
-              data-ai-hint={heroImage.imageHint}
-              priority
-            />
-          )}
-        </div>
-        <div className="container px-4 md:px-6 text-center relative z-10">
-          <div className="max-w-3xl mx-auto space-y-6">
-            <h1 className="text-4xl font-headline font-bold tracking-tight text-white sm:text-5xl md:text-6xl">
-              Reloop: Waste to Wonder
-            </h1>
-            <p className="text-lg text-gray-200 md:text-xl">
-              Turn your unwanted items into treasures. Connect with local artisans, discover unique upcycled products, and make a positive impact.
-            </p>
-            <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
-              <Button asChild size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90">
-                <Link href="/marketplace">
-                  Find Treasures <ShoppingBag className="ml-2 h-5 w-5" />
-                </Link>
-              </Button>
-              <Button asChild size="lg" variant="secondary">
-                <Link href="/give">
-                  Give Waste <Recycle className="ml-2 h-5 w-5" />
-                </Link>
-              </Button>
+      <section className="w-full py-20 md:py-32 lg:py-40 bg-background">
+        <div className="container px-4 md:px-6">
+            <div className="grid gap-6 lg:grid-cols-2 lg:gap-12 xl:grid-cols-2">
+                <div className="flex flex-col justify-center space-y-4">
+                    <div className="space-y-2">
+                        <h1 className="text-4xl font-headline font-bold tracking-tight text-primary sm:text-5xl md:text-6xl">
+                            Reloop: Waste to Wonder
+                        </h1>
+                        <p className="max-w-[600px] text-muted-foreground md:text-xl">
+                            Turn your unwanted items into treasures. Connect with local artisans, discover unique upcycled products, and make a positive impact.
+                        </p>
+                    </div>
+                    <div className="flex flex-col gap-2 min-[400px]:flex-row">
+                         <Button asChild size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90">
+                            <Link href="/marketplace">
+                            Find Treasures <ShoppingBag className="ml-2 h-5 w-5" />
+                            </Link>
+                        </Button>
+                        <Button asChild size="lg" variant="secondary">
+                            <Link href="/give">
+                            Give Waste <Recycle className="ml-2 h-5 w-5" />
+                            </Link>
+                        </Button>
+                    </div>
+                </div>
+                {heroImage && (
+                    <Image
+                        src={heroImage.imageUrl}
+                        alt={heroImage.description}
+                        width="600"
+                        height="400"
+                        className="mx-auto aspect-video overflow-hidden rounded-xl object-contain sm:w-full lg:order-last"
+                        data-ai-hint={heroImage.imageHint}
+                    />
+                )}
             </div>
-          </div>
         </div>
       </section>
 
-      <section className="w-full py-12 md:py-24 lg:py-32 bg-background">
+      <section className="w-full py-12 md:py-24 lg:py-32">
         <div className="container px-4 md:px-6">
           <div className="flex flex-col items-center justify-center space-y-4 text-center">
             <h2 className="text-3xl font-headline font-bold tracking-tighter sm:text-5xl">
