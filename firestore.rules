@@ -1,73 +1,69 @@
 /**
- * @fileOverview Firestore Security Rules for the Reloop platform.
+ * @file Firebase Security Rules for Reloop Firestore database.
  *
  * Core Philosophy:
- * This ruleset enforces a strict user-ownership model for user profiles. Each user can only
- * read and write their own profile data.
+ * This ruleset enforces a strict user-ownership model, where each user can only
+ * read and write their own data. This ensures data privacy and prevents
+ * unauthorized access.
  *
  * Data Structure:
- * All user data is stored under the `/users/{userId}` path. The `{userId}` segment must
- * match the authenticated user's UID for write operations.
+ * All user data is stored under the `/users/{userId}` path, where `{userId}`
+ * corresponds to the authenticated user's UID. Each document under this path
+ * represents a user profile, containing information like email, user type, and
+ * impact score.
  *
  * Key Security Decisions:
- * - Users can only create, read, update, and delete their own profiles.
- * - Listing all users is disallowed to protect user privacy.
- * - Data validation is relaxed to facilitate rapid prototyping but enforces relational integrity
- *   for the 'id' field to prevent unauthorized data modification.
- *
- * Denormalization for Authorization:
- *  User profiles denormalize 'userType' to be self-contained and make authorization checks on user types easier.
+ * - Users can only create their own profile.
+ * - Users can only read and modify their own profile data.
+ * - Listing users is not allowed to prevent information disclosure.
+ * - The `userType` field is denormalized onto the user document for simpler and
+ *   more efficient authorization checks. This avoids the need for additional reads
+ *   to determine a user's role.
  */
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
     /**
-     * @description Manages user profiles. Each user can only manage their own profile.
+     * @description Manages access control for user profiles.
      * @path /users/{userId}
-     * @allow (create) - User 'user_abc' can create their own profile if request.auth.uid == 'user_abc' and request.resource.data.id == 'user_abc'.
-     * @allow (get) - User 'user_abc' can read their own profile if request.auth.uid == 'user_abc'.
-     * @allow (update) - User 'user_abc' can update their own profile if request.auth.uid == 'user_abc' and the profile exists.
-     * @allow (delete) - User 'user_abc' can delete their own profile if request.auth.uid == 'user_abc' and the profile exists.
-     * @deny (create) - User 'user_xyz' cannot create a profile with ID 'user_abc'.
-     * @deny (get) - User 'user_xyz' cannot read user 'user_abc' profile.
-     * @deny (update) - User 'user_xyz' cannot update user 'user_abc' profile.
-     * @deny (delete) - User 'user_xyz' cannot delete user 'user_abc' profile.
-     * @principle Enforces document ownership, validates the user ID on creation, and ensures profile existence on update/delete.
+     * @allow (create) - User 'test_user' with UID 'test_user' can create their own profile.
+     * @allow (get, update, delete) - User 'test_user' with UID 'test_user' can read, update, and delete their own profile.
+     * @deny (create) - User 'another_user' with UID 'another_user' cannot create a profile with ID 'test_user'.
+     * @deny (get, update, delete) - User 'another_user' with UID 'another_user' cannot read, update, or delete the profile of user 'test_user'.
+     * @principle Enforces strict user-ownership for profile data.
      */
     match /users/{userId} {
-      // Helper function to check if the user is signed in
-      function isSignedIn() {
-        return request.auth != null;
-      }
+      // Allow a user to create their own profile if the userId matches their auth UID.
+      allow create: if isSignedIn() && isOwner(userId) && request.resource.data.id == request.auth.uid;
 
-      // Helper function to check if the user is the owner of the document
-      function isOwner(userId) {
-        return request.auth.uid == userId;
-      }
-
-      // Helper function to check if the user is the owner of the existing document
-      function isExistingOwner(userId) {
-        return isOwner(userId) && resource != null;
-      }
-
-      // Allows a user to create their own profile if the userId matches their auth.uid AND the request data's id matches their auth.uid.
-      allow create: if isSignedIn()
-                      && isOwner(userId)
-                      && request.resource.data.id == userId;
-
-      // Allows a user to get their own profile.
+      // Allow a user to read their own profile.
       allow get: if isSignedIn() && isOwner(userId);
 
-      // Listing users is not allowed.
+      // Allow a user to update their own profile and ensure that the userId cannot be changed.
+      allow update: if isSignedIn() && isExistingOwner(userId) && request.resource.data.id == resource.data.id;
+
+      // Allow a user to delete their own profile.
+      allow delete: if isSignedIn() && isExistingOwner(userId);
+
+      // Prevent listing of all user profiles.
       allow list: if false;
+    }
 
-      // Allows a user to update their own profile if the userId matches their auth.uid and the document exists, AND the user ID does not change.
-      allow update: if isExistingOwner(userId)
-                      && request.resource.data.id == resource.data.id;
+    // --- Helper functions ---
+    // Check if the user is signed in.
+    function isSignedIn() {
+      return request.auth != null;
+    }
 
-      // Allows a user to delete their own profile if the userId matches their auth.uid and the document exists.
-      allow delete: if isExistingOwner(userId);
+    // Check if the requested user ID matches the authenticated user's UID.
+    function isOwner(userId) {
+      return request.auth.uid == userId;
+    }
+
+    // Check if the requested user ID matches the authenticated user's UID and resource exists.
+    function isExistingOwner(userId) {
+      return isOwner(userId) && resource != null;
     }
   }
 }
