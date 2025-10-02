@@ -73,7 +73,11 @@ export default function SignupPage() {
       router.push('/profile');
 
     } catch (error: any) {
-      setError(error.message);
+      if (error.code === 'auth/email-already-in-use') {
+        setError('This email is already in use. Please try another email or login.');
+      } else {
+        setError(error.message);
+      }
     } finally {
       setIsLoading(false);
     }
