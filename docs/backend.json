@@ -1,0 +1,73 @@
+{
+  "entities": {
+    "User": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "User",
+      "type": "object",
+      "description": "Represents a user in the Reloop platform.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the User entity."
+        },
+        "email": {
+          "type": "string",
+          "description": "Email address of the user.",
+          "format": "email"
+        },
+        "userType": {
+          "type": "string",
+          "description": "The type of user (Giver, Maker, or Buyer).",
+          "format": "enum",
+          "items": {
+            "type": "string"
+          }
+        },
+        "impactScore": {
+          "type": "number",
+          "description": "The user's impact score, representing their contribution to waste diversion."
+        },
+        "firstName": {
+          "type": "string",
+          "description": "The first name of the user."
+        },
+        "lastName": {
+          "type": "string",
+          "description": "The last name of the user."
+        }
+      },
+      "required": [
+        "id",
+        "email",
+        "userType"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password",
+      "anonymous"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/users/{userId}",
+        "definition": {
+          "entityName": "User",
+          "schema": {
+            "$ref": "#/backend/entities/User"
+          },
+          "description": "Stores user profiles. Includes denormalized 'userType' for authorization independence.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier for the user."
+            }
+          ]
+        }
+      }
+    ],
+    "reasoning": "The Firestore structure is designed to support the Reloop platform's core features, focusing on user roles (Giver, Maker, Buyer), material identification, local artisan feeds, AI-driven idea generation, upcycled product marketplaces, and impact score tracking. The structure prioritizes authorization independence and secure data access using path-based ownership for user-related data and membership maps for collaborative data (if needed in the future, for example if makers want to collaborate). Authorization independence is achieved by storing the 'userType' directly within each user document. This eliminates the need for security rules to perform expensive `get()` operations to determine a user's role. Segregation is used by storing user profiles and product data in distinct collections, each with its own security posture. This approach allows us to implement secure `list` operations (QAPs) by applying filtering rules directly at the collection level. The structure facilitates easy debugging and maintenance due to its clear separation of concerns and explicit data modeling. The user collection stores core user information, while separate collections can be added to store products, materials, and interactions between users."
+  }
+}
