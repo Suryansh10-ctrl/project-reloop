@@ -32,7 +32,7 @@ export default function LoginPage() {
     setError(null);
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      router.push('/profile');
+      router.push('/');
     } catch (error: any) {
       setError(error.message);
     } finally {

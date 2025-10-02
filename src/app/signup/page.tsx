@@ -70,7 +70,7 @@ export default function SignupPage() {
         impactScore: 0,
       });
 
-      router.push('/profile');
+      router.push('/');
 
     } catch (error: any) {
       if (error.code === 'auth/email-already-in-use') {
