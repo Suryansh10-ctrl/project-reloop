@@ -2,7 +2,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useSearchParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -18,34 +17,41 @@ export default function ProfilePage() {
     const user = users[0];
     const userProducts = products.filter(p => p.makerId === user.id);
     const [givenItems, setGivenItems] = useState<Material[]>([]);
-    const searchParams = useSearchParams();
-
+    
     useEffect(() => {
-        const material = searchParams.get("material");
-        const description = searchParams.get("description");
-        const photoDataUri = searchParams.get("photoDataUri");
-        const listingType = searchParams.get("listingType");
+        // Check for new listing data in sessionStorage
+        const newListingJSON = sessionStorage.getItem('newListing');
 
-        if (material && photoDataUri && listingType === 'free') {
-            const newGivenItem: Material = {
-                id: `mat-${Date.now()}`,
-                name: material,
-                description: description || `A new listing for ${material}.`,
-                imageUrl: photoDataUri,
-                imageHint: "new material",
-                giverId: user.id,
-                location: "Your Location", // Placeholder
-                status: 'Free',
-            };
+        if (newListingJSON) {
+            const newListing = JSON.parse(newListingJSON);
+            
+            // Only process it if it's a 'free' listing for the profile page
+            if (newListing.listingType === 'free') {
+                // We remove it after reading to ensure it's only processed once.
+                sessionStorage.removeItem('newListing');
 
-            setGivenItems(prevItems => {
-                if (prevItems.find(item => item.imageUrl === newGivenItem.imageUrl)) {
-                    return prevItems;
+                if (newListing.material && newListing.photoDataUri) {
+                     const newGivenItem: Material = {
+                        id: `mat-${Date.now()}`,
+                        name: newListing.material,
+                        description: newListing.description || `A new listing for ${newListing.material}.`,
+                        imageUrl: newListing.photoDataUri,
+                        imageHint: "new material",
+                        giverId: user.id,
+                        location: "Your Location", // Placeholder
+                        status: 'Free',
+                    };
+
+                    setGivenItems(prevItems => {
+                        if (prevItems.find(item => item.imageUrl === newGivenItem.imageUrl)) {
+                            return prevItems;
+                        }
+                        return [newGivenItem, ...prevItems];
+                    });
                 }
-                return [newGivenItem, ...prevItems];
-            });
+            }
         }
-    }, [searchParams, user.id]);
+    }, [user.id]);
 
     return (
         <div className="container mx-auto px-4 py-12 md:px-6">

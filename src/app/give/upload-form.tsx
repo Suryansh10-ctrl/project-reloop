@@ -97,19 +97,18 @@ export default function UploadForm() {
 
   useEffect(() => {
     if (createState.listingCreated) {
-        const material = createState.material;
-        const description = descriptionRef.current?.value;
-        const photoDataUri = preview;
-        
-        const queryParams = new URLSearchParams({
-            material: material || '',
-            description: description || '',
-            photoDataUri: photoDataUri || '',
+        const listingData = {
+            material: createState.material,
+            description: descriptionRef.current?.value,
+            photoDataUri: preview,
             listingType: listingType,
-        });
+        };
 
+        // Use sessionStorage to pass data to the next page
+        sessionStorage.setItem('newListing', JSON.stringify(listingData));
+        
         const destination = listingType === 'free' ? '/profile' : '/makers/feed';
-        router.push(`${destination}?${queryParams.toString()}`);
+        router.push(destination);
     }
   }, [createState, preview, listingType, router]);
   

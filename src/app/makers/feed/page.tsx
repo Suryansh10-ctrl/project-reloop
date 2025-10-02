@@ -1,3 +1,4 @@
+
 "use client";
 
 import Image from "next/image";
@@ -7,43 +8,46 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { MapPin } from "lucide-react";
 import IdeaButton from "./idea-button";
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Material } from "@/lib/placeholder-data";
-import { useSearchParams } from "next/navigation";
 
 
 export default function MakersFeedPage() {
   const [materials, setMaterials] = useState(initialMaterials);
-  const searchParams = useSearchParams();
 
   useEffect(() => {
-    const material = searchParams.get("material");
-    const description = searchParams.get("description");
-    const photoDataUri = searchParams.get("photoDataUri");
-    const listingType = searchParams.get("listingType");
+    // Check for new listing data in sessionStorage
+    const newListingJSON = sessionStorage.getItem('newListing');
+    
+    if (newListingJSON) {
+      const newListing = JSON.parse(newListingJSON);
+      
+      // We only want to process it once, so we remove it after reading.
+      sessionStorage.removeItem('newListing');
 
-    if (material && photoDataUri && listingType) {
-      const newMaterial: Material = {
-        id: `mat-${Date.now()}`,
-        name: material,
-        description: description || `A new listing for ${material}.`,
-        imageUrl: photoDataUri,
-        imageHint: "new material",
-        giverId: "user-3", // Example user, since we don't have auth yet
-        location: "Your Location",
-        status: listingType === 'free' ? 'Free' : listingType === 'sale' ? 'For Sale' : 'For Customization',
-        price: listingType === 'sale' ? 10 : undefined // Example price
-      };
+      if (newListing.material && newListing.photoDataUri) {
+        const newMaterial: Material = {
+          id: `mat-${Date.now()}`,
+          name: newListing.material,
+          description: newListing.description || `A new listing for ${newListing.material}.`,
+          imageUrl: newListing.photoDataUri,
+          imageHint: "new material",
+          giverId: "user-3", // Example user, since we don't have auth yet
+          location: "Your Location",
+          status: newListing.listingType === 'free' ? 'Free' : newListing.listingType === 'sale' ? 'For Sale' : 'For Customization',
+          price: newListing.listingType === 'sale' ? 10 : undefined // Example price
+        };
 
-      // Add to the top of the feed and prevent duplicates
-      setMaterials(prevMaterials => {
-        if (prevMaterials.find(m => m.imageUrl === newMaterial.imageUrl)) {
-          return prevMaterials;
-        }
-        return [newMaterial, ...prevMaterials]
-      });
+        // Add to the top of the feed and prevent duplicates
+        setMaterials(prevMaterials => {
+          if (prevMaterials.find(m => m.imageUrl === newMaterial.imageUrl)) {
+            return prevMaterials;
+          }
+          return [newMaterial, ...prevMaterials]
+        });
+      }
     }
-  }, [searchParams]);
+  }, []);
 
   return (
     <div className="bg-background">
