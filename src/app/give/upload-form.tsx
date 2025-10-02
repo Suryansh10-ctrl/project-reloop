@@ -10,11 +10,10 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Loader2, Sparkles, UploadCloud, CheckCircle } from "lucide-react";
+import { Loader2, Sparkles, UploadCloud } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 const initialIdentifyState = {
@@ -26,6 +25,7 @@ const initialCreateState = {
     error: null,
     listingCreated: false,
     material: null,
+    listingData: null,
 }
 
 function IdentifySubmitButton() {
@@ -90,33 +90,21 @@ export default function UploadForm() {
     }
   };
 
-  const resetForm = () => {
-    // This is a bit of a hack to reset the parent component's state
-    window.location.reload();
-  }
-
   useEffect(() => {
-    if (createState.listingCreated) {
-        const listingData = {
-            material: createState.material,
-            description: descriptionRef.current?.value,
-            photoDataUri: preview,
-            listingType: listingType,
-        };
-
+    if (createState.listingCreated && createState.listingData) {
         // Use sessionStorage to pass data to the next page
-        sessionStorage.setItem('newListing', JSON.stringify(listingData));
+        sessionStorage.setItem('newListing', JSON.stringify(createState.listingData));
         
-        const destination = listingType === 'free' ? '/profile' : '/makers/feed';
+        const destination = createState.listingData.listingType === 'free' ? '/profile' : '/makers/feed';
         router.push(destination);
     }
-  }, [createState, preview, listingType, router]);
+  }, [createState, router]);
   
   if (createState.listingCreated) {
     return (
         <div className="flex flex-col items-center justify-center text-center p-8">
             <Loader2 className="h-12 w-12 animate-spin text-primary mb-4" />
-            <p className="text-lg">Creating your listing and updating your profile...</p>
+            <p className="text-lg">Creating your listing...</p>
         </div>
     )
   }

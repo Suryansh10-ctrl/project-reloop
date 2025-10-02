@@ -19,6 +19,7 @@ export async function identifyMaterialAction(prevState: any, formData: FormData)
     if (!validatedFields.success) {
       return {
         ...prevState,
+        result: null,
         error: "Invalid input.",
       };
     }
@@ -34,6 +35,7 @@ export async function identifyMaterialAction(prevState: any, formData: FormData)
     console.error(error);
     return {
       ...prevState,
+      result: null,
       error: "Failed to identify material. Please try again.",
     };
   }
@@ -78,5 +80,12 @@ export async function createListingAction(prevState: any, formData: FormData) {
     // Simulate a short delay to mimic database operation
     await new Promise(resolve => setTimeout(resolve, 1000));
     
-    return { ...prevState, error: null, listingCreated: true, material: validatedFields.data.material };
+    const listingData = {
+        material: validatedFields.data.material,
+        description: validatedFields.data.description,
+        photoDataUri: validatedFields.data.photoDataUri,
+        listingType: validatedFields.data.listingType,
+    };
+    
+    return { ...prevState, error: null, listingCreated: true, material: validatedFields.data.material, listingData };
 }
