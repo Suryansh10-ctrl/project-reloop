@@ -1,17 +1,51 @@
+
+"use client";
+
+import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
+import Image from "next/image";
+import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { products, users } from "@/lib/placeholder-data";
-import { Award, Leaf, Star, Trophy } from "lucide-react";
-import Image from "next/image";
-import Link from "next/link";
+import { products, users, Material } from "@/lib/placeholder-data";
+import { Leaf, Star, Trophy } from "lucide-react";
 
 export default function ProfilePage() {
     // Let's assume user-1 is the logged in user
     const user = users[0];
     const userProducts = products.filter(p => p.makerId === user.id);
+    const [givenItems, setGivenItems] = useState<Material[]>([]);
+    const searchParams = useSearchParams();
+
+    useEffect(() => {
+        const material = searchParams.get("material");
+        const description = searchParams.get("description");
+        const photoDataUri = searchParams.get("photoDataUri");
+        const listingType = searchParams.get("listingType");
+
+        if (material && photoDataUri && listingType === 'free') {
+            const newGivenItem: Material = {
+                id: `mat-${Date.now()}`,
+                name: material,
+                description: description || `A new listing for ${material}.`,
+                imageUrl: photoDataUri,
+                imageHint: "new material",
+                giverId: user.id,
+                location: "Your Location", // Placeholder
+                status: 'Free',
+            };
+
+            setGivenItems(prevItems => {
+                if (prevItems.find(item => item.imageUrl === newGivenItem.imageUrl)) {
+                    return prevItems;
+                }
+                return [newGivenItem, ...prevItems];
+            });
+        }
+    }, [searchParams, user.id]);
 
     return (
         <div className="container mx-auto px-4 py-12 md:px-6">
@@ -70,9 +104,25 @@ export default function ProfilePage() {
                                 ))}
                            </div>
                         </TabsContent>
-                        <TabsContent value="listings" className="mt-6 text-center py-16">
-                             <p className="text-muted-foreground">You haven't listed any items to give away yet.</p>
-                             <Button asChild className="mt-4"><Link href="/give">Give an Item</Link></Button>
+                        <TabsContent value="listings" className="mt-6">
+                            {givenItems.length === 0 ? (
+                                <div className="text-center py-16">
+                                    <p className="text-muted-foreground">You haven't listed any items to give away yet.</p>
+                                    <Button asChild className="mt-4"><Link href="/give">Give an Item</Link></Button>
+                                </div>
+                            ) : (
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                                    {givenItems.map(item => (
+                                        <Card key={item.id} className="overflow-hidden">
+                                            <Image src={item.imageUrl} alt={item.name} width={300} height={200} className="w-full aspect-video object-cover" />
+                                            <div className="p-4">
+                                                <h4 className="font-bold">{item.name}</h4>
+                                                <p className="text-sm text-muted-foreground">{item.status}</p>
+                                            </div>
+                                        </Card>
+                                    ))}
+                                </div>
+                            )}
                         </TabsContent>
                         <TabsContent value="leaderboard" className="mt-6 text-center py-16">
                             <Trophy className="mx-auto h-12 w-12 text-yellow-500 mb-4"/>

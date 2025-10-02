@@ -108,7 +108,8 @@ export default function UploadForm() {
             listingType: listingType,
         });
 
-        router.push(`/makers/feed?${queryParams.toString()}`);
+        const destination = listingType === 'free' ? '/profile' : '/makers/feed';
+        router.push(`${destination}?${queryParams.toString()}`);
     }
   }, [createState, preview, listingType, router]);
   
@@ -116,7 +117,7 @@ export default function UploadForm() {
     return (
         <div className="flex flex-col items-center justify-center text-center p-8">
             <Loader2 className="h-12 w-12 animate-spin text-primary mb-4" />
-            <p className="text-lg">Creating your listing and updating the feed...</p>
+            <p className="text-lg">Creating your listing and updating your profile...</p>
         </div>
     )
   }
