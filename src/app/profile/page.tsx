@@ -175,7 +175,7 @@ export default function ProfilePage() {
                     />
                     <div className="p-4">
                       <h4 className="font-bold">{product.name}</h4>
-                      <p className="text-sm text-primary">${product.price}</p>
+                      <p className="text-sm text-primary">₹{product.price}</p>
                     </div>
                   </Card>
                 ))}

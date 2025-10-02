@@ -143,7 +143,7 @@ export default function Home() {
                     </div>
                     <p className="text-sm text-muted-foreground mt-2 line-clamp-2">{product.story}</p>
                     <div className="flex items-center justify-between mt-4">
-                      <span className="text-lg font-bold text-primary">${product.price.toFixed(2)}</span>
+                      <span className="text-lg font-bold text-primary">₹{product.price.toFixed(2)}</span>
                        <Button variant="ghost" size="sm" asChild>
                         <Link href="#">
                           View <ArrowRight className="ml-1 h-4 w-4" />

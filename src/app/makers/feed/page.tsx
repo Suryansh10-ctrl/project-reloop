@@ -35,7 +35,7 @@ export default function MakersFeedPage() {
           giverId: "user-3", // Example user, since we don't have auth yet
           location: "Your Location",
           status: newListing.listingType === 'free' ? 'Free' : newListing.listingType === 'sale' ? 'For Sale' : 'For Customization',
-          price: newListing.listingType === 'sale' ? 10 : undefined // Example price
+          price: newListing.listingType === 'sale' ? 100 : undefined // Example price
         };
 
         // Add to the top of the feed and prevent duplicates
@@ -79,7 +79,7 @@ export default function MakersFeedPage() {
                   <div className="flex justify-between items-start">
                     <CardTitle className="font-headline text-xl mb-2">{material.name}</CardTitle>
                     <Badge variant={material.status === 'Free' ? 'default' : 'secondary'} className={material.status === 'Free' ? 'bg-primary/80' : ''}>
-                      {material.status === 'For Sale' && material.price ? `$${material.price}` : material.status}
+                      {material.status === 'For Sale' && material.price ? `₹${material.price}` : material.status}
                     </Badge>
                   </div>
                   <CardDescription className="line-clamp-3">{material.description}</CardDescription>
