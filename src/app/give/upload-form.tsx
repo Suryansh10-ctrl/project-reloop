@@ -152,7 +152,7 @@ export default function UploadForm() {
               </AlertDescription>
             </Alert>
           )}
-        </CardContent>
+        </CardFooter>
       </form>
     </Card>
   );
