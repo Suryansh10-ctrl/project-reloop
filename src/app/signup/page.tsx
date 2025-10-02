@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -17,10 +16,9 @@ import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Loader2, UserPlus } from 'lucide-react';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
-import { createUserAction } from '@/app/actions';
-import { useAuth } from '@/firebase';
+import { useAuth, useFirestore } from '@/firebase';
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
-
+import { doc, setDoc } from 'firebase/firestore';
 
 export default function SignupPage() {
   const [formData, setFormData] = useState({
@@ -35,6 +33,7 @@ export default function SignupPage() {
   
   const router = useRouter();
   const auth = useAuth();
+  const firestore = useFirestore();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -62,20 +61,16 @@ export default function SignupPage() {
         displayName: `${firstName} ${lastName}`
       });
 
-      // 3. Call server action to create user document in Firestore
-      const result = await createUserAction({
-        userId: user.uid,
+      // 3. Create user document in Firestore on the client
+      await setDoc(doc(firestore, "users", user.uid), {
         email,
         firstName,
         lastName,
-        userType: userType as 'Giver' | 'Maker' | 'Buyer',
+        userType,
+        impactScore: 0,
       });
 
-      if (result.success) {
-        router.push('/profile');
-      } else {
-        setError(result.error || "An unknown error occurred during signup.");
-      }
+      router.push('/profile');
 
     } catch (error: any) {
       setError(error.message);

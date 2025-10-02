@@ -2,8 +2,6 @@
 
 import { identifyMaterial } from "@/ai/flows/material-identification";
 import { suggestUpcyclingIdeas } from "@/ai/flows/upcycling-idea-generator";
-import { doc, setDoc } from "firebase/firestore";
-import { getSdks, initializeFirebase } from "@/firebase";
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
@@ -95,48 +93,16 @@ export async function createListingAction(prevState: any, formData: FormData) {
     return { ...prevState, error: null, listingCreated: true, material: validatedFields.data.material, listingData };
 }
 
-const createUserSchema = z.object({
-  userId: z.string(),
-  firstName: z.string(),
-  lastName: z.string(),
-  email: z.string().email(),
-  userType: z.enum(['Giver', 'Maker', 'Buyer']),
-});
-
-export async function createUserAction(data: z.infer<typeof createUserSchema>) {
-  const validatedFields = createUserSchema.safeParse(data);
-
-  if (!validatedFields.success) {
-    return { success: false, error: "Invalid form data." };
-  }
-  
-  const { userId, email, firstName, lastName, userType } = validatedFields.data;
-  
-  // HACK: This is still technically calling a client-side function from the server
-  // but since it's just getting the initialized instance it works.
-  // A better solution would involve a dedicated admin SDK setup for server actions.
-  const { firestore } = getSdks(initializeFirebase().firebaseApp);
-
-  try {
-    await setDoc(doc(firestore, "users", userId), {
-      email,
-      firstName,
-      lastName,
-      userType,
-      impactScore: 0,
-    });
-    
-    revalidatePath('/');
-    return { success: true, error: null };
-  } catch (error: any) {
-    return { success: false, error: error.message };
-  }
+// This action is now a placeholder as user creation is handled on the client.
+// It can be repurposed for other server-side user logic if needed.
+export async function createUserAction(data: any) {
+  // Server-side validation can still happen here if desired.
+  console.log("User data received on server:", data);
+  return { success: true, error: null };
 }
-
 
 export async function signOutAction() {
     // This is now just a placeholder. The actual sign-out happens on the client.
-    // We can use this to revalidate paths if needed after client-side sign-out.
     revalidatePath('/');
     redirect('/login');
 }
