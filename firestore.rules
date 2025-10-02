@@ -1,15 +1,39 @@
+/**
+ * @fileOverview Firestore Security Rules for the Reloop platform.
+ *
+ * Core Philosophy:
+ * This ruleset enforces a strict user-ownership model for user profiles. Each user can only
+ * read and write their own profile data.
+ *
+ * Data Structure:
+ * All user data is stored under the `/users/{userId}` path. The `{userId}` segment must
+ * match the authenticated user's UID for write operations.
+ *
+ * Key Security Decisions:
+ * - Users can only create, read, update, and delete their own profiles.
+ * - Listing all users is disallowed to protect user privacy.
+ * - Data validation is relaxed to facilitate rapid prototyping but enforces relational integrity
+ *   for the 'id' field to prevent unauthorized data modification.
+ *
+ * Denormalization for Authorization:
+ *  User profiles denormalize 'userType' to be self-contained and make authorization checks on user types easier.
+ */
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
     /**
-     * @description This ruleset enforces a strict user-ownership model for user profiles.
+     * @description Manages user profiles. Each user can only manage their own profile.
      * @path /users/{userId}
-     * @allow (create) - Authenticated user with UID 'user_abc' can create their profile at /users/user_abc.
-     * @allow (get, update, delete) - Authenticated user with UID 'user_abc' can read/update/delete their profile at /users/user_abc.
-     * @deny (create) - Authenticated user with UID 'user_abc' cannot create a profile at /users/user_xyz.
-     * @deny (update, delete) - Authenticated user with UID 'user_abc' cannot update/delete the profile at /users/user_xyz.
-     * @principle Enforces document ownership for writes and restricts access to a user's own data.
+     * @allow (create) - User 'user_abc' can create their own profile if request.auth.uid == 'user_abc' and request.resource.data.id == 'user_abc'.
+     * @allow (get) - User 'user_abc' can read their own profile if request.auth.uid == 'user_abc'.
+     * @allow (update) - User 'user_abc' can update their own profile if request.auth.uid == 'user_abc' and the profile exists.
+     * @allow (delete) - User 'user_abc' can delete their own profile if request.auth.uid == 'user_abc' and the profile exists.
+     * @deny (create) - User 'user_xyz' cannot create a profile with ID 'user_abc'.
+     * @deny (get) - User 'user_xyz' cannot read user 'user_abc' profile.
+     * @deny (update) - User 'user_xyz' cannot update user 'user_abc' profile.
+     * @deny (delete) - User 'user_xyz' cannot delete user 'user_abc' profile.
+     * @principle Enforces document ownership, validates the user ID on creation, and ensures profile existence on update/delete.
      */
     match /users/{userId} {
       // Helper function to check if the user is signed in
@@ -17,29 +41,32 @@ service cloud.firestore {
         return request.auth != null;
       }
 
-      // Helper function to check if the authenticated user is the owner of the document
+      // Helper function to check if the user is the owner of the document
       function isOwner(userId) {
         return request.auth.uid == userId;
       }
 
-      // Helper function to check if the authenticated user is the owner of the existing document
+      // Helper function to check if the user is the owner of the existing document
       function isExistingOwner(userId) {
         return isOwner(userId) && resource != null;
       }
 
-      // Allow a user to create their own document, enforcing that the user ID in the path matches the authenticated user's ID and the ID field.
-      allow create: if isSignedIn() && isOwner(userId) && request.resource.data.id == userId;
+      // Allows a user to create their own profile if the userId matches their auth.uid AND the request data's id matches their auth.uid.
+      allow create: if isSignedIn()
+                      && isOwner(userId)
+                      && request.resource.data.id == userId;
 
-      // Allow a user to read their own document.
-      allow get: if isOwner(userId);
+      // Allows a user to get their own profile.
+      allow get: if isSignedIn() && isOwner(userId);
 
-      // Allow a user to list their own document.
-      allow list: if isOwner(userId);
+      // Listing users is not allowed.
+      allow list: if false;
 
-      // Allow a user to update their own document, enforcing immutability of the id field.
-      allow update: if isExistingOwner(userId) && request.resource.data.id == resource.data.id;
+      // Allows a user to update their own profile if the userId matches their auth.uid and the document exists, AND the user ID does not change.
+      allow update: if isExistingOwner(userId)
+                      && request.resource.data.id == resource.data.id;
 
-      // Allow a user to delete their own document.
+      // Allows a user to delete their own profile if the userId matches their auth.uid and the document exists.
       allow delete: if isExistingOwner(userId);
     }
   }
