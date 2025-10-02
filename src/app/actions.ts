@@ -2,7 +2,13 @@
 
 import { identifyMaterial } from "@/ai/flows/material-identification";
 import { suggestUpcyclingIdeas } from "@/ai/flows/upcycling-idea-generator";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile } from "firebase/auth";
+import { doc, setDoc } from "firebase/firestore";
+import { getSdks, initializeFirebase } from "@/firebase";
 import { z } from "zod";
+import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
+
 
 const identifyMaterialSchema = z.object({
   photoDataUri: z.string(),
@@ -88,4 +94,76 @@ export async function createListingAction(prevState: any, formData: FormData) {
     };
     
     return { ...prevState, error: null, listingCreated: true, material: validatedFields.data.material, listingData };
+}
+
+const signUpSchema = z.object({
+  firstName: z.string(),
+  lastName: z.string(),
+  email: z.string().email(),
+  password: z.string().min(6),
+  userType: z.enum(['Giver', 'Maker', 'Buyer']),
+});
+
+export async function signUpAction(prevState: any, formData: FormData) {
+  const validatedFields = signUpSchema.safeParse(Object.fromEntries(formData.entries()));
+
+  if (!validatedFields.success) {
+    return { success: false, error: "Invalid form data." };
+  }
+  
+  const { email, password, firstName, lastName, userType } = validatedFields.data;
+  const { auth, firestore } = getSdks(initializeFirebase().firebaseApp);
+
+  try {
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    const user = userCredential.user;
+
+    await updateProfile(user, {
+      displayName: `${firstName} ${lastName}`
+    });
+
+    await setDoc(doc(firestore, "users", user.uid), {
+      email,
+      firstName,
+      lastName,
+      userType,
+      impactScore: 0,
+    });
+    
+    revalidatePath('/');
+    return { success: true, error: null };
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  }
+}
+
+const signInSchema = z.object({
+  email: z.string().email(),
+  password: z.string(),
+});
+
+export async function signInAction(prevState: any, formData: FormData) {
+  const validatedFields = signInSchema.safeParse(Object.fromEntries(formData.entries()));
+
+  if (!validatedFields.success) {
+    return { success: false, error: "Invalid email or password." };
+  }
+
+  const { auth } = getSdks(initializeFirebase().firebaseApp);
+  const { email, password } = validatedFields.data;
+  
+  try {
+    await signInWithEmailAndPassword(auth, email, password);
+    revalidatePath('/');
+    return { success: true, error: null };
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  }
+}
+
+export async function signOutAction() {
+    const { auth } = getSdks(initializeFirebase().firebaseApp);
+    await signOut(auth);
+    revalidatePath('/');
+    redirect('/login');
 }

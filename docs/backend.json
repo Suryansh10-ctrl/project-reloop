@@ -1,3 +1,4 @@
+
 {
   "entities": {
     "User": {
@@ -18,10 +19,7 @@
         "userType": {
           "type": "string",
           "description": "The type of user (Giver, Maker, or Buyer).",
-          "format": "enum",
-          "items": {
-            "type": "string"
-          }
+          "enum": ["Giver", "Maker", "Buyer"]
         },
         "impactScore": {
           "type": "number",
@@ -46,7 +44,7 @@
   "auth": {
     "providers": [
       "password",
-      "anonymous"
+      "google.com"
     ]
   },
   "firestore": {
@@ -67,7 +65,6 @@
           ]
         }
       }
-    ],
-    "reasoning": "The Firestore structure is designed to support the Reloop platform's core features, focusing on user roles (Giver, Maker, Buyer), material identification, local artisan feeds, AI-driven idea generation, upcycled product marketplaces, and impact score tracking. The structure prioritizes authorization independence and secure data access using path-based ownership for user-related data and membership maps for collaborative data (if needed in the future, for example if makers want to collaborate). Authorization independence is achieved by storing the 'userType' directly within each user document. This eliminates the need for security rules to perform expensive `get()` operations to determine a user's role. Segregation is used by storing user profiles and product data in distinct collections, each with its own security posture. This approach allows us to implement secure `list` operations (QAPs) by applying filtering rules directly at the collection level. The structure facilitates easy debugging and maintenance due to its clear separation of concerns and explicit data modeling. The user collection stores core user information, while separate collections can be added to store products, materials, and interactions between users."
+    ]
   }
 }

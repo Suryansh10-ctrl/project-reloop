@@ -1,6 +1,7 @@
-import Link from 'next/link';
-import { Leaf, Menu, Search, ShoppingCart, User } from 'lucide-react';
+'use client';
 
+import Link from 'next/link';
+import { Leaf, Menu, Search, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -13,10 +14,11 @@ import {
 import { Input } from '@/components/ui/input';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
-import { users } from '@/lib/placeholder-data';
+import { useUser } from '@/firebase';
+import { signOutAction } from '@/app/actions';
 
 export default function Header() {
-  const loggedInUser = users[2]; // Example user
+  const { user, isUserLoading } = useUser();
 
   const navLinks = [
     { href: '/marketplace', label: 'Marketplace' },
@@ -85,28 +87,41 @@ export default function Header() {
             />
           </div>
         </form>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="secondary" size="icon" className="rounded-full">
-              <Avatar className="h-8 w-8">
-                <AvatarImage src={loggedInUser.avatarUrl} alt={loggedInUser.name} />
-                <AvatarFallback>{loggedInUser.name.charAt(0)}</AvatarFallback>
-              </Avatar>
-              <span className="sr-only">Toggle user menu</span>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>My Account</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem asChild>
+        {isUserLoading ? (
+          <div className="h-8 w-8 rounded-full bg-muted animate-pulse" />
+        ) : user ? (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="secondary" size="icon" className="rounded-full">
+                <Avatar className="h-8 w-8">
+                  <AvatarImage src={user.photoURL ?? undefined} alt={user.displayName ?? ''} />
+                  <AvatarFallback>{user.email?.charAt(0).toUpperCase()}</AvatarFallback>
+                </Avatar>
+                <span className="sr-only">Toggle user menu</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>My Account</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem asChild>
                 <Link href="/profile">Profile</Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem>Settings</DropdownMenuItem>
-            <DropdownMenuItem>Support</DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>Logout</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+              </DropdownMenuItem>
+              <DropdownMenuItem>Settings</DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <form action={signOutAction}>
+                <DropdownMenuItem asChild>
+                  <button type="submit" className="w-full">Logout</button>
+                </DropdownMenuItem>
+              </form>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        ) : (
+          <Button asChild>
+            <Link href="/login">
+              <User className="mr-2 h-4 w-4" /> Login
+            </Link>
+          </Button>
+        )}
       </div>
     </header>
   );
