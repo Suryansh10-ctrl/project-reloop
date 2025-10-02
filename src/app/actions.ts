@@ -96,10 +96,6 @@ export async function createListingAction(prevState: any, formData: FormData) {
     } else { // 'customize' or other types
         redirect('/makers/feed');
     }
-
-    // This part below will not be reached because of the redirect.
-    // We are returning a value here to satisfy TypeScript, but it's unreachable.
-    return { ...prevState, error: null, listingCreated: true };
 }
 
 // This action is now a placeholder as user creation is handled on the client.
