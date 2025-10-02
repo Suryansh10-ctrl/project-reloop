@@ -1,6 +1,5 @@
 'use client';
 
-import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import {
@@ -10,15 +9,14 @@ import {
   Heart,
   Recycle,
   ShoppingBag,
-  Sparkles,
   Store,
 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { products, users, materials } from '@/lib/placeholder-data';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { PlaceHolderImages } from '@/lib/placeholder-images';
+import Image from 'next/image';
 
 export default function Home() {
   const featuredProducts = products.slice(0, 4);
@@ -28,22 +26,40 @@ export default function Home() {
       <section className="w-full py-20 md:py-32 lg:py-40 bg-background">
         <div className="container px-4 md:px-6">
           <div className="flex flex-col items-center space-y-4 text-center">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              className="space-y-2"
-            >
-              <h1 className="text-4xl font-headline font-bold tracking-tight text-primary sm:text-5xl md:text-6xl">
-                Reloop: Waste to Wonder
+             <h1 className="text-4xl font-headline font-bold tracking-tight text-primary sm:text-5xl md:text-6xl flex flex-col sm:flex-row justify-center items-center gap-x-4">
+                <motion.span
+                  initial={{ opacity: 0, x: -100 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.8, ease: 'easeOut' }}
+                  className="whitespace-nowrap"
+                >
+                  Reloop:
+                </motion.span>
+                <motion.span
+                  initial={{ opacity: 0, x: 100 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.8, ease: 'easeOut' }}
+                  className="whitespace-nowrap"
+                >
+                  Waste to Wonder
+                </motion.span>
               </h1>
-              <p className="max-w-[600px] text-muted-foreground md:text-xl mx-auto">
+              <motion.p
+                 initial={{ opacity: 0, y: 20 }}
+                 animate={{ opacity: 1, y: 0 }}
+                 transition={{ duration: 0.5, delay: 0.5 }}
+                className="max-w-[600px] text-muted-foreground md:text-xl mx-auto"
+              >
                 Turn your unwanted items into treasures. Connect with local
                 artisans, discover unique upcycled products, and make a positive
                 impact.
-              </p>
-            </motion.div>
-            <div className="flex flex-col gap-2 min-[400px]:flex-row justify-center">
+              </motion.p>
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.8 }}
+              className="flex flex-col gap-2 min-[400px]:flex-row justify-center"
+            >
               <Button
                 asChild
                 size="lg"
@@ -58,7 +74,7 @@ export default function Home() {
                   Give Waste <Recycle className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
-            </div>
+            </motion.div>
           </div>
         </div>
       </section>
