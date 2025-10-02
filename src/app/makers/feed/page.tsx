@@ -1,12 +1,50 @@
+"use client";
+
 import Image from "next/image";
-import { materials, users } from "@/lib/placeholder-data";
+import { materials as initialMaterials, users } from "@/lib/placeholder-data";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Sparkles } from "lucide-react";
+import { MapPin } from "lucide-react";
 import IdeaButton from "./idea-button";
+import { use, useEffect, useState } from "react";
+import { Material } from "@/lib/placeholder-data";
+import { useSearchParams } from "next/navigation";
+
 
 export default function MakersFeedPage() {
+  const [materials, setMaterials] = useState(initialMaterials);
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    const material = searchParams.get("material");
+    const description = searchParams.get("description");
+    const photoDataUri = searchParams.get("photoDataUri");
+    const listingType = searchParams.get("listingType");
+
+    if (material && photoDataUri && listingType) {
+      const newMaterial: Material = {
+        id: `mat-${Date.now()}`,
+        name: material,
+        description: description || `A new listing for ${material}.`,
+        imageUrl: photoDataUri,
+        imageHint: "new material",
+        giverId: "user-3", // Example user, since we don't have auth yet
+        location: "Your Location",
+        status: listingType === 'free' ? 'Free' : listingType === 'sale' ? 'For Sale' : 'For Customization',
+        price: listingType === 'sale' ? 10 : undefined // Example price
+      };
+
+      // Add to the top of the feed and prevent duplicates
+      setMaterials(prevMaterials => {
+        if (prevMaterials.find(m => m.imageUrl === newMaterial.imageUrl)) {
+          return prevMaterials;
+        }
+        return [newMaterial, ...prevMaterials]
+      });
+    }
+  }, [searchParams]);
+
   return (
     <div className="bg-background">
       <div className="container mx-auto px-4 py-12 md:px-6">

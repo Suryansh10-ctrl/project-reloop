@@ -15,6 +15,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 const initialIdentifyState = {
   result: null,
@@ -71,6 +72,7 @@ export default function UploadForm() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const dataUriInputRef = useRef<HTMLInputElement>(null);
   const descriptionRef = useRef<HTMLTextAreaElement>(null);
+  const router = useRouter();
 
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -78,9 +80,10 @@ export default function UploadForm() {
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setPreview(reader.result as string);
+        const result = reader.result as string;
+        setPreview(result);
         if (dataUriInputRef.current) {
-          dataUriInputRef.current.value = reader.result as string;
+          dataUriInputRef.current.value = result;
         }
       };
       reader.readAsDataURL(file);
@@ -91,24 +94,30 @@ export default function UploadForm() {
     // This is a bit of a hack to reset the parent component's state
     window.location.reload();
   }
+
+  useEffect(() => {
+    if (createState.listingCreated) {
+        const material = createState.material;
+        const description = descriptionRef.current?.value;
+        const photoDataUri = preview;
+        
+        const queryParams = new URLSearchParams({
+            material: material || '',
+            description: description || '',
+            photoDataUri: photoDataUri || '',
+            listingType: listingType,
+        });
+
+        router.push(`/makers/feed?${queryParams.toString()}`);
+    }
+  }, [createState, preview, listingType, router]);
   
   if (createState.listingCreated) {
     return (
-         <Alert variant="default" className="w-full bg-primary/10 border-primary/20 mt-4 text-center">
-            <CheckCircle className="h-12 w-12 text-primary mx-auto mb-4" />
-            <AlertTitle className="font-headline text-2xl text-primary mb-2">Listing Created!</AlertTitle>
-            <AlertDescription className="space-y-4">
-                <p>
-                Your <span className="font-semibold">{createState.material}</span> has been listed. Thank you for contributing to the circular economy!
-                </p>
-                <div className="flex justify-center gap-4">
-                    <Button onClick={resetForm}>List Another Item</Button>
-                    <Button asChild variant="secondary">
-                        <Link href="/makers/feed">View Feed</Link>
-                    </Button>
-                </div>
-            </AlertDescription>
-        </Alert>
+        <div className="flex flex-col items-center justify-center text-center p-8">
+            <Loader2 className="h-12 w-12 animate-spin text-primary mb-4" />
+            <p className="text-lg">Creating your listing and updating the feed...</p>
+        </div>
     )
   }
 

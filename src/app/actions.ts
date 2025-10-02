@@ -75,9 +75,8 @@ export async function createListingAction(prevState: any, formData: FormData) {
         };
     }
 
-    console.log("Creating listing with:", validatedFields.data);
-    // Here you would typically save the data to a database.
-    // For now, we'll just simulate success.
+    // Simulate a short delay to mimic database operation
+    await new Promise(resolve => setTimeout(resolve, 1000));
     
     return { ...prevState, error: null, listingCreated: true, material: validatedFields.data.material };
 }
