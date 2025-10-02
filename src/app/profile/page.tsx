@@ -15,7 +15,7 @@ import {
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { products, users as placeholderUsers, Material } from '@/lib/placeholder-data';
-import { Leaf, Star, Trophy, Frown, Loader2 } from 'lucide-react';
+import { Leaf, Star, Trophy, Frown, Loader2, Hammer } from 'lucide-react';
 import { useUser, useDoc, useMemoFirebase } from '@/firebase';
 import { doc, getFirestore } from 'firebase/firestore';
 
@@ -163,23 +163,36 @@ export default function ProfilePage() {
               <TabsTrigger value="leaderboard">Leaderboard</TabsTrigger>
             </TabsList>
             <TabsContent value="creations" className="mt-6">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {userProducts.map((product) => (
-                  <Card key={product.id} className="overflow-hidden">
-                    <Image
-                      src={product.imageUrl}
-                      alt={product.name}
-                      width={300}
-                      height={200}
-                      className="w-full aspect-video object-cover"
-                    />
-                    <div className="p-4">
-                      <h4 className="font-bold">{product.name}</h4>
-                      <p className="text-sm text-primary">₹{product.price}</p>
-                    </div>
-                  </Card>
-                ))}
-              </div>
+              {userProducts.length === 0 ? (
+                <div className="text-center py-16">
+                  <Hammer className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
+                  <h3 className="text-xl font-semibold">Start your creation journey!</h3>
+                  <p className="text-muted-foreground mt-2">
+                    Find materials from the community to upcycle into new products.
+                  </p>
+                  <Button asChild className="mt-6">
+                    <Link href="/makers/feed">Create from Waste</Link>
+                  </Button>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {userProducts.map((product) => (
+                    <Card key={product.id} className="overflow-hidden">
+                      <Image
+                        src={product.imageUrl}
+                        alt={product.name}
+                        width={300}
+                        height={200}
+                        className="w-full aspect-video object-cover"
+                      />
+                      <div className="p-4">
+                        <h4 className="font-bold">{product.name}</h4>
+                        <p className="text-sm text-primary">₹{product.price}</p>
+                      </div>
+                    </Card>
+                  ))}
+                </div>
+              )}
             </TabsContent>
             <TabsContent value="listings" className="mt-6">
               {givenItems.length === 0 ? (
