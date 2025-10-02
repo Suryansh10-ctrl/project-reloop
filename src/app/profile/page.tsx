@@ -15,7 +15,7 @@ import {
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { products, users as placeholderUsers, Material } from '@/lib/placeholder-data';
-import { Leaf, Star, Trophy, Frown } from 'lucide-react';
+import { Leaf, Star, Trophy, Frown, Loader2 } from 'lucide-react';
 import { useUser, useDoc, useMemoFirebase } from '@/firebase';
 import { doc, getFirestore } from 'firebase/firestore';
 
