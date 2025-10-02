@@ -12,6 +12,18 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
+
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Star, ArrowLeft, ShoppingCart, Frown, Leaf } from 'lucide-react';
@@ -25,10 +37,10 @@ export default function ProductDetailPage() {
   const product = products.find((p) => p.id === id);
   const maker = product ? users.find((u) => u.id === product.makerId) : null;
 
-  const handleBuyNow = () => {
+  const handleOrder = (method: 'Pay Now' | 'COD') => {
     toast({
-      title: "Thank you for your purchase!",
-      description: `${product?.name} is on its way.`,
+      title: "Order Placed!",
+      description: `${product?.name} will be on its way. Payment method: ${method}.`,
     });
   }
 
@@ -106,11 +118,27 @@ export default function ProductDetailPage() {
                 <Leaf className="mr-2 h-5 w-5" />
                 <span>Diverted <strong>{product.wasteDiverted}kg</strong> of waste from landfill.</span>
             </div>
-
-          <Button size="lg" onClick={handleBuyNow}>
-            <ShoppingCart className="mr-2 h-5 w-5" />
-            Buy Now
-          </Button>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button size="lg">
+                    <ShoppingCart className="mr-2 h-5 w-5" />
+                    Buy Now
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Confirm Your Purchase</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    You are about to buy "{product.name}" for ₹{product.price.toFixed(2)}. Please select your payment method.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction onClick={() => handleOrder('COD')}>Cash on Delivery (COD)</AlertDialogAction>
+                  <AlertDialogAction onClick={() => handleOrder('Pay Now')}>Pay Now</AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
         </div>
       </div>
     </div>

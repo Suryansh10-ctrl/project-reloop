@@ -43,6 +43,17 @@ export type Material = {
   price?: number;
 };
 
+export type Order = {
+    id: string;
+    productId: string;
+    productName: string;
+    productImage: string;
+    price: number;
+    orderDate: string;
+    status: 'Processing' | 'Shipped' | 'Delivered';
+    userId: string;
+}
+
 export const users: User[] = [
   {
     id: 'user-1',
@@ -172,3 +183,26 @@ export const materials: Material[] = [
         status: 'Free',
     }
 ];
+
+export const orders: Order[] = [
+    {
+        id: 'order-1',
+        productId: 'prod-2',
+        productName: 'Vintage Saree Tote Bag',
+        productImage: findImage('saree-tote-bag').imageUrl,
+        price: 450.0,
+        orderDate: '2024-05-20',
+        status: 'Delivered',
+        userId: 'user-3'
+    },
+    {
+        id: 'order-2',
+        productId: 'prod-1',
+        productName: 'Upcycled Denim Cushion',
+        productImage: findImage('denim-cushion').imageUrl,
+        price: 250.0,
+        orderDate: '2024-05-28',
+        status: 'Shipped',
+        userId: 'user-3'
+    }
+]
