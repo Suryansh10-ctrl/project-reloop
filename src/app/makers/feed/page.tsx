@@ -2,7 +2,7 @@
 "use client";
 
 import Image from "next/image";
-import { materials as initialMaterials, users } from "@/lib/placeholder-data";
+import { materials as initialMaterials, users as initialUsers, User } from "@/lib/placeholder-data";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -11,16 +11,19 @@ import IdeaButton from "./idea-button";
 import { useEffect, useState } from "react";
 import { Material } from "@/lib/placeholder-data";
 import { Button } from "@/components/ui/button";
+import { useUser } from "@/firebase";
 
 
 export default function MakersFeedPage() {
   const [materials, setMaterials] = useState(initialMaterials);
+  const [users, setUsers] = useState(initialUsers);
+  const { user } = useUser();
 
   useEffect(() => {
     // Check for new listing data in sessionStorage
     const newListingJSON = sessionStorage.getItem('newListing');
     
-    if (newListingJSON) {
+    if (newListingJSON && user) {
       const newListing = JSON.parse(newListingJSON);
       
       // We only want to process it once, so we remove it after reading.
@@ -33,7 +36,7 @@ export default function MakersFeedPage() {
           description: newListing.description || `A new listing for ${newListing.material}.`,
           imageUrl: newListing.photoDataUri,
           imageHint: "new material",
-          giverId: "user-3", // Example user, since we don't have auth yet
+          giverId: user.uid,
           location: "Your Location",
           status: newListing.listingType === 'free' ? 'Free' : newListing.listingType === 'sale' ? 'For Sale' : 'For Customization',
           price: newListing.listingType === 'sale' ? parseFloat(newListing.price) : undefined
@@ -46,9 +49,27 @@ export default function MakersFeedPage() {
           }
           return [newMaterial, ...prevMaterials]
         });
+
+        // Add current user to users list if not already present
+        setUsers(prevUsers => {
+          if (prevUsers.find(u => u.id === user.uid)) {
+            return prevUsers;
+          }
+          const newUser: User = {
+            id: user.uid,
+            name: user.displayName || 'New User',
+            email: user.email || '',
+            avatarUrl: user.photoURL || '',
+            impactScore: 0,
+            bio: '',
+            type: 'Giver',
+            rating: 0
+          };
+          return [...prevUsers, newUser];
+        });
       }
     }
-  }, []);
+  }, [user]);
 
   return (
     <div className="bg-background">

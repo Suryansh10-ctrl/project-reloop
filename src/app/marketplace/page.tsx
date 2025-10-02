@@ -5,23 +5,26 @@ import Image from "next/image";
 import Link from "next/link";
 import { useSearchParams } from 'next/navigation';
 import { ArrowRight, Star, Frown } from "lucide-react";
-import { products as allProducts, users, Product } from "@/lib/placeholder-data";
+import { products as allProducts, users as initialUsers, Product, User } from "@/lib/placeholder-data";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { useEffect, useState } from "react";
+import { useUser } from "@/firebase";
 
 export default function MarketplacePage() {
   const searchParams = useSearchParams();
   const searchQuery = searchParams.get('q');
   const [products, setProducts] = useState(allProducts);
+  const [users, setUsers] = useState(initialUsers);
+  const { user } = useUser();
 
   useEffect(() => {
     // Check for new listing data in sessionStorage
     const newListingJSON = sessionStorage.getItem('newListing');
     
-    if (newListingJSON) {
+    if (newListingJSON && user) {
       const newListing = JSON.parse(newListingJSON);
       
       // We only want to process it once, so we remove it after reading.
@@ -35,7 +38,7 @@ export default function MarketplacePage() {
             price: parseFloat(newListing.price) || 0,
             imageUrl: newListing.photoDataUri,
             imageHint: "new item",
-            makerId: "user-3", // Example user, since we don't have auth yet
+            makerId: user.uid,
             material: newListing.material,
             wasteDiverted: 0.1, // Example value
         };
@@ -47,9 +50,27 @@ export default function MarketplacePage() {
           }
           return [newProduct, ...prevProducts]
         });
+
+        // Add current user to users list if not already present
+        setUsers(prevUsers => {
+          if (prevUsers.find(u => u.id === user.uid)) {
+            return prevUsers;
+          }
+          const newUser: User = {
+            id: user.uid,
+            name: user.displayName || 'New User',
+            email: user.email || '',
+            avatarUrl: user.photoURL || '',
+            impactScore: 0,
+            bio: '',
+            type: 'Maker',
+            rating: 0
+          };
+          return [...prevUsers, newUser];
+        });
       }
     }
-  }, []);
+  }, [user]);
 
   const filteredProducts = searchQuery
     ? products.filter(product =>
