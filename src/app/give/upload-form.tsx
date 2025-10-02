@@ -10,11 +10,10 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Loader2, Sparkles, UploadCloud } from "lucide-react";
+import { Loader2, Sparkles, UploadCloud, IndianRupee } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { useRouter } from "next/navigation";
 
 const initialIdentifyState = {
   result: null,
@@ -25,7 +24,6 @@ const initialCreateState = {
     error: null,
     listingCreated: false,
     material: null,
-    listingData: null,
 }
 
 function IdentifySubmitButton() {
@@ -68,11 +66,11 @@ export default function UploadForm() {
 
   const [preview, setPreview] = useState<string | null>(null);
   const [listingType, setListingType] = useState("free");
+  const [price, setPrice] = useState("");
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const dataUriInputRef = useRef<HTMLInputElement>(null);
   const descriptionRef = useRef<HTMLTextAreaElement>(null);
-  const router = useRouter();
 
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -90,21 +88,25 @@ export default function UploadForm() {
     }
   };
 
-  useEffect(() => {
-    if (createState.listingCreated && createState.listingData) {
-        // Use sessionStorage to pass data to the next page
-        sessionStorage.setItem('newListing', JSON.stringify(createState.listingData));
-        
-        const destination = createState.listingData.listingType === 'free' ? '/profile' : '/makers/feed';
-        router.push(destination);
-    }
-  }, [createState, router]);
-  
+  const handleFormSubmit = (formData: FormData) => {
+    // Manually set session storage before action
+    const listingData = {
+        material: formData.get('material'),
+        description: formData.get('description'),
+        photoDataUri: formData.get('photoDataUri'),
+        listingType: formData.get('listingType'),
+        price: formData.get('price'),
+    };
+    sessionStorage.setItem('newListing', JSON.stringify(listingData));
+    createAction(formData);
+  }
+
   if (createState.listingCreated) {
     return (
         <div className="flex flex-col items-center justify-center text-center p-8">
             <Loader2 className="h-12 w-12 animate-spin text-primary mb-4" />
             <p className="text-lg">Creating your listing...</p>
+            <p className="text-sm text-muted-foreground">Redirecting...</p>
         </div>
     )
   }
@@ -181,11 +183,12 @@ export default function UploadForm() {
           <Sparkles className="h-4 w-4 text-primary" />
           <AlertTitle className="font-headline text-lg text-primary">Material Identified!</AlertTitle>
           <AlertDescription asChild>
-            <form action={createAction} className="space-y-4">
+            <form action={handleFormSubmit} className="space-y-4">
                 <input type="hidden" name="material" value={identifyState.result.material} />
                 <input type="hidden" name="photoDataUri" value={preview || ''} />
                 <input type="hidden" name="description" value={descriptionRef.current?.value || ''} />
                 <input type="hidden" name="listingType" value={listingType} />
+                <input type="hidden" name="price" value={price} />
 
                 <p>
                 We believe your item is made of: <Badge className="text-base ml-2">{identifyState.result.material}</Badge>
@@ -207,6 +210,24 @@ export default function UploadForm() {
                         </div>
                     </RadioGroup>
                 </div>
+                 {listingType === 'sale' && (
+                    <div className="space-y-2">
+                        <Label htmlFor="price">Price</Label>
+                        <div className="relative">
+                            <IndianRupee className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                            <Input
+                                id="price"
+                                name="price"
+                                type="number"
+                                placeholder="Enter your price"
+                                value={price}
+                                onChange={(e) => setPrice(e.target.value)}
+                                required
+                                className="pl-8"
+                            />
+                        </div>
+                    </div>
+                )}
                 <ListingSubmitButton />
                 {createState.error && (
                     <p className="text-sm font-medium text-destructive">{createState.error}</p>
@@ -218,3 +239,4 @@ export default function UploadForm() {
     </>
   );
 }
+

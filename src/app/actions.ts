@@ -63,6 +63,7 @@ const createListingSchema = z.object({
   description: z.string().optional(),
   photoDataUri: z.string(),
   listingType: z.string(),
+  price: z.string().optional(),
 });
 
 export async function createListingAction(prevState: any, formData: FormData) {
@@ -71,6 +72,7 @@ export async function createListingAction(prevState: any, formData: FormData) {
         description: formData.get('description'),
         photoDataUri: formData.get('photoDataUri'),
         listingType: formData.get('listingType'),
+        price: formData.get('price'),
     });
 
     if (!validatedFields.success) {
@@ -80,19 +82,24 @@ export async function createListingAction(prevState: any, formData: FormData) {
             listingCreated: false,
         };
     }
-
+    
     // This part is for navigation, we don't need a real "database" operation for now
     // It's important to keep the redirect logic
-    const listingType = validatedFields.data.listingType;
-    const destination = listingType === 'free' ? '/profile' : '/makers/feed';
+    const { listingType } = validatedFields.data;
     
     // The redirect function works by throwing an error, so it should not be in a try/catch block
     // and it will stop the execution of this action.
-    redirect(destination);
+    if (listingType === 'free') {
+        redirect('/profile');
+    } else if (listingType === 'sale') {
+        redirect('/marketplace');
+    } else { // 'customize' or other types
+        redirect('/makers/feed');
+    }
 
     // This part below will not be reached because of the redirect.
     // We are returning a value here to satisfy TypeScript, but it's unreachable.
-    return { ...prevState, error: null, listingCreated: true, material: validatedFields.data.material };
+    return { ...prevState, error: null, listingCreated: true };
 }
 
 // This action is now a placeholder as user creation is handled on the client.

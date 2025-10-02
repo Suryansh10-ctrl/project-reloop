@@ -36,7 +36,7 @@ export default function MakersFeedPage() {
           giverId: "user-3", // Example user, since we don't have auth yet
           location: "Your Location",
           status: newListing.listingType === 'free' ? 'Free' : newListing.listingType === 'sale' ? 'For Sale' : 'For Customization',
-          price: newListing.listingType === 'sale' ? 100 : undefined // Example price
+          price: newListing.listingType === 'sale' ? parseFloat(newListing.price) : undefined
         };
 
         // Add to the top of the feed and prevent duplicates

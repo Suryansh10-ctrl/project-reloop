@@ -1,26 +1,63 @@
+
 'use client';
 
 import Image from "next/image";
 import Link from "next/link";
 import { useSearchParams } from 'next/navigation';
 import { ArrowRight, Star, Frown } from "lucide-react";
-import { products as allProducts, users } from "@/lib/placeholder-data";
+import { products as allProducts, users, Product } from "@/lib/placeholder-data";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { useEffect, useState } from "react";
 
 export default function MarketplacePage() {
   const searchParams = useSearchParams();
   const searchQuery = searchParams.get('q');
+  const [products, setProducts] = useState(allProducts);
+
+  useEffect(() => {
+    // Check for new listing data in sessionStorage
+    const newListingJSON = sessionStorage.getItem('newListing');
+    
+    if (newListingJSON) {
+      const newListing = JSON.parse(newListingJSON);
+      
+      // We only want to process it once, so we remove it after reading.
+      sessionStorage.removeItem('newListing');
+
+      if (newListing.listingType === 'sale' && newListing.material && newListing.photoDataUri) {
+         const newProduct: Product = {
+            id: `prod-${Date.now()}`,
+            name: newListing.material,
+            story: newListing.description || `A newly listed item: ${newListing.material}.`,
+            price: parseFloat(newListing.price) || 0,
+            imageUrl: newListing.photoDataUri,
+            imageHint: "new item",
+            makerId: "user-3", // Example user, since we don't have auth yet
+            material: newListing.material,
+            wasteDiverted: 0.1, // Example value
+        };
+
+        // Add to the top of the feed and prevent duplicates
+        setProducts(prevProducts => {
+          if (prevProducts.find(p => p.imageUrl === newProduct.imageUrl)) {
+            return prevProducts;
+          }
+          return [newProduct, ...prevProducts]
+        });
+      }
+    }
+  }, []);
 
   const filteredProducts = searchQuery
-    ? allProducts.filter(product =>
+    ? products.filter(product =>
         product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         product.story.toLowerCase().includes(searchQuery.toLowerCase()) ||
         product.material.toLowerCase().includes(searchQuery.toLowerCase())
       )
-    : allProducts;
+    : products;
 
   return (
     <div className="bg-background">
