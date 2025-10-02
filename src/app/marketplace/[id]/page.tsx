@@ -2,8 +2,8 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { useParams } from 'next/navigation';
-import { products, users } from '@/lib/placeholder-data';
+import { useParams, useRouter } from 'next/navigation';
+import { products, users, Product } from '@/lib/placeholder-data';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -28,20 +28,47 @@ import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Star, ArrowLeft, ShoppingCart, Frown, Leaf } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useUser } from '@/firebase';
 
 export default function ProductDetailPage() {
   const params = useParams();
   const { id } = params;
   const { toast } = useToast();
+  const router = useRouter();
+  const { user } = useUser();
 
   const product = products.find((p) => p.id === id);
   const maker = product ? users.find((u) => u.id === product.makerId) : null;
 
   const handleOrder = (method: 'Pay Now' | 'COD') => {
-    toast({
-      title: "Order Placed!",
-      description: `${product?.name} will be on its way. Payment method: ${method}.`,
-    });
+    if (!product || !user) {
+         toast({
+            variant: "destructive",
+            title: "Error",
+            description: "You must be logged in to place an order.",
+        });
+        return;
+    }
+
+    if (method === 'COD') {
+        const newOrder = {
+            id: `order-${Date.now()}`,
+            productId: product.id,
+            productName: product.name,
+            productImage: product.imageUrl,
+            price: product.price,
+            orderDate: new Date().toISOString(),
+            status: 'Processing',
+            userId: user.uid,
+        };
+        sessionStorage.setItem('newOrder', JSON.stringify(newOrder));
+        router.push('/profile/orders');
+    } else {
+         toast({
+            title: "Order Placed!",
+            description: `${product?.name} will be on its way. Payment method: ${method}.`,
+        });
+    }
   }
 
   if (!product) {

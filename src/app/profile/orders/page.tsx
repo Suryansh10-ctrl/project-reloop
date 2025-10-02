@@ -5,14 +5,36 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { orders as placeholderOrders } from '@/lib/placeholder-data';
+import { orders as placeholderOrders, Order } from '@/lib/placeholder-data';
 import { useUser } from '@/firebase';
 import { Package, Frown, Loader2, ArrowLeft } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
+import { useEffect, useState } from 'react';
 
 export default function MyOrdersPage() {
   const { user, isUserLoading } = useUser();
+  const [orders, setOrders] = useState(placeholderOrders);
+
+  useEffect(() => {
+    // Check for new order data in sessionStorage
+    const newOrderJSON = sessionStorage.getItem('newOrder');
+    
+    if (newOrderJSON && user) {
+      const newOrder: Order = JSON.parse(newOrderJSON);
+      
+      // We only want to process it once, so we remove it after reading.
+      sessionStorage.removeItem('newOrder');
+
+      // Add to the top of the orders list and prevent duplicates
+      setOrders(prevOrders => {
+        if (prevOrders.find(o => o.id === newOrder.id)) {
+          return prevOrders;
+        }
+        return [newOrder, ...prevOrders];
+      });
+    }
+  }, [user]);
 
   if (isUserLoading) {
     return (
@@ -36,7 +58,8 @@ export default function MyOrdersPage() {
     );
   }
 
-  const userOrders = placeholderOrders.filter(order => order.userId === 'user-3'); // Hardcoded for demo
+  // Now, filter orders based on the state, which includes any new orders
+  const userOrders = orders.filter(order => order.userId === user.uid || (order.userId === 'user-3' && !orders.some(o => o.userId === user.uid))); 
 
   return (
     <div className="container mx-auto px-4 py-12 md:px-6 max-w-4xl">
