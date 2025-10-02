@@ -24,8 +24,16 @@ export async function identifyMaterialAction(prevState: any, formData: FormData)
       return {
         ...prevState,
         result: null,
-        error: "Invalid input.",
+        error: "Invalid input. Please upload a photo.",
       };
+    }
+    
+    if (!validatedFields.data.photoDataUri) {
+        return {
+            ...prevState,
+            result: null,
+            error: "Please upload a photo.",
+        };
     }
 
     const result = await identifyMaterial(validatedFields.data);
@@ -66,7 +74,7 @@ const createListingSchema = z.object({
   price: z.string().optional(),
 });
 
-export async function createListingAction(prevState: any, formData: FormData) {
+export async function createListingAction(formData: FormData) {
     const validatedFields = createListingSchema.safeParse({
         material: formData.get('material'),
         description: formData.get('description'),
@@ -76,15 +84,13 @@ export async function createListingAction(prevState: any, formData: FormData) {
     });
 
     if (!validatedFields.success) {
-        return {
-            ...prevState,
-            error: "Invalid data for listing.",
-            listingCreated: false,
-        };
+        // This case should ideally be handled client-side
+        // but as a fallback, we can redirect with an error
+        // For now, we redirect to a safe page.
+        redirect('/give');
+        return;
     }
     
-    // This part is for navigation, we don't need a real "database" operation for now
-    // It's important to keep the redirect logic
     const { listingType } = validatedFields.data;
     
     // The redirect function works by throwing an error, so it should not be in a try/catch block

@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useRef, useActionState, useEffect } from "react";
+import { useState, useRef, useActionState } from "react";
 import { useFormStatus } from "react-dom";
 import Image from "next/image";
 import { identifyMaterialAction, createListingAction } from "@/app/actions";
@@ -19,12 +19,6 @@ const initialIdentifyState = {
   result: null,
   error: null,
 };
-
-const initialCreateState = {
-    error: null,
-    listingCreated: false,
-    material: null,
-}
 
 function IdentifySubmitButton() {
   const { pending } = useFormStatus();
@@ -44,6 +38,7 @@ function IdentifySubmitButton() {
     </Button>
   );
 }
+
 function ListingSubmitButton() {
     const { pending } = useFormStatus();
     return (
@@ -62,8 +57,7 @@ function ListingSubmitButton() {
 
 export default function UploadForm() {
   const [identifyState, identifyAction] = useActionState(identifyMaterialAction, initialIdentifyState);
-  const [createState, createAction] = useActionState(createListingAction, initialCreateState);
-
+  
   const [preview, setPreview] = useState<string | null>(null);
   const [listingType, setListingType] = useState("free");
   const [price, setPrice] = useState("");
@@ -89,7 +83,6 @@ export default function UploadForm() {
   };
 
   const handleFormSubmit = (formData: FormData) => {
-    // Manually set session storage before action
     const listingData = {
         material: formData.get('material'),
         description: formData.get('description'),
@@ -98,18 +91,10 @@ export default function UploadForm() {
         price: formData.get('price'),
     };
     sessionStorage.setItem('newListing', JSON.stringify(listingData));
-    createAction(formData);
-  }
-
-  if (createState.listingCreated) {
-    return (
-        <div className="flex flex-col items-center justify-center text-center p-8">
-            <Loader2 className="h-12 w-12 animate-spin text-primary mb-4" />
-            <p className="text-lg">Creating your listing...</p>
-            <p className="text-sm text-muted-foreground">Redirecting...</p>
-        </div>
-    )
-  }
+    
+    // We are calling the action directly, not via useActionState here.
+    // The form element's action prop will handle the submission.
+  };
 
   return (
     <>
@@ -166,36 +151,33 @@ export default function UploadForm() {
             </CardContent>
             <CardFooter className="flex flex-col items-start gap-4">
               <IdentifySubmitButton />
+               {identifyState.error && (
+                <Alert variant="destructive" className="mt-4 w-full">
+                  <AlertTitle>Error</AlertTitle>
+                  <AlertDescription>{identifyState.error}</AlertDescription>
+                </Alert>
+              )}
             </CardFooter>
           </form>
         </Card>
       )}
 
-      {identifyState.error && (
-        <Alert variant="destructive" className="mt-4">
-          <AlertTitle>Error</AlertTitle>
-          <AlertDescription>{identifyState.error}</AlertDescription>
-        </Alert>
-      )}
-
-      {identifyState.result && !createState.listingCreated && (
+      {identifyState.result && (
         <Alert variant="default" className="w-full bg-primary/10 border-primary/20 mt-4">
           <Sparkles className="h-4 w-4 text-primary" />
           <AlertTitle className="font-headline text-lg text-primary">Material Identified!</AlertTitle>
           <AlertDescription asChild>
-            <form action={handleFormSubmit} className="space-y-4">
+             <form action={createListingAction} onSubmit={(e) => handleFormSubmit(new FormData(e.currentTarget))} className="space-y-4">
                 <input type="hidden" name="material" value={identifyState.result.material} />
                 <input type="hidden" name="photoDataUri" value={preview || ''} />
                 <input type="hidden" name="description" value={descriptionRef.current?.value || ''} />
-                <input type="hidden" name="listingType" value={listingType} />
-                <input type="hidden" name="price" value={price} />
 
                 <p>
                 We believe your item is made of: <Badge className="text-base ml-2">{identifyState.result.material}</Badge>
                 </p>
                 <div className="space-y-2">
                     <Label>How do you want to list this item?</Label>
-                    <RadioGroup defaultValue={listingType} onValueChange={setListingType} className="flex flex-col sm:flex-row gap-4 pt-2">
+                    <RadioGroup name="listingType" value={listingType} onValueChange={setListingType} className="flex flex-col sm:flex-row gap-4 pt-2">
                         <div className="flex items-center space-x-2">
                             <RadioGroupItem value="free" id="r1" />
                             <Label htmlFor="r1">Give for Free</Label>
@@ -229,9 +211,6 @@ export default function UploadForm() {
                     </div>
                 )}
                 <ListingSubmitButton />
-                {createState.error && (
-                    <p className="text-sm font-medium text-destructive">{createState.error}</p>
-                )}
             </form>
           </AlertDescription>
         </Alert>
@@ -239,4 +218,3 @@ export default function UploadForm() {
     </>
   );
 }
-
