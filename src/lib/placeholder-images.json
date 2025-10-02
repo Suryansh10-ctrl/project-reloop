@@ -1,3 +1,82 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "hero",
+      "description": "A beautifully crafted upcycled home decor item.",
+      "imageUrl": "https://images.unsplash.com/photo-1757525473669-db27d3785be0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHx1cGN5Y2xlZCUyMGRlY29yfGVufDB8fHx8MTc1OTQzNjU1MHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "upcycled decor"
+    },
+    {
+      "id": "denim-cushion",
+      "description": "A cushion cover made from old denim jeans.",
+      "imageUrl": "https://images.unsplash.com/photo-1570786240066-c0d753711cfe?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxkZW5pbSUyMGN1c2hpb258ZW58MHx8fHwxNzU5NDM2NTQ5fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "denim cushion"
+    },
+    {
+      "id": "saree-tote-bag",
+      "description": "A colorful tote bag made from a vintage saree.",
+      "imageUrl": "https://images.unsplash.com/photo-1574365569389-a10d488ca3fb?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHx0b3RlJTIwYmFnfGVufDB8fHx8MTc1OTM0NTYyN3ww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "tote bag"
+    },
+    {
+      "id": "bottle-lamps",
+      "description": "Lamps made from recycled glass bottles.",
+      "imageUrl": "https://images.unsplash.com/photo-1647742313928-26b914b2c123?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxib3R0bGUlMjBsYW1wfGVufDB8fHx8MTc1OTQzNjU0OXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "bottle lamp"
+    },
+    {
+      "id": "wood-shelf",
+      "description": "A rustic shelf made from reclaimed pallet wood.",
+      "imageUrl": "https://images.unsplash.com/photo-1670365944115-88b6f21ec23a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHx3b29kJTIwc2hlbGZ8ZW58MHx8fHwxNzU5NDM2NTQ5fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "wood shelf"
+    },
+    {
+      "id": "pile-of-sarees",
+      "description": "A colorful pile of old sarees waiting to be upcycled.",
+      "imageUrl": "https://images.unsplash.com/photo-1676696706907-0e04665b80bd?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxzYXJlZXMlMjBmYWJyaWN8ZW58MHx8fHwxNzU5NDM2NTQ5fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "sarees fabric"
+    },
+    {
+      "id": "old-jeans",
+      "description": "A stack of old denim jeans.",
+      "imageUrl": "https://images.unsplash.com/photo-1551715789-d7b5cfccd1c8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8ZGVuaW0lMjBqZWFuc3xlbnwwfHx8fDE3NTkzNDkyNjF8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "denim jeans"
+    },
+    {
+      "id": "scrap-wood",
+      "description": "A pile of scrap wood from old furniture.",
+      "imageUrl": "https://images.unsplash.com/photo-1709219703096-66dfe95076ad?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxzY3JhcCUyMHdvb2R8ZW58MHx8fHwxNzU5NDM2NTUwfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "scrap wood"
+    },
+    {
+      "id": "plastic-bottles",
+      "description": "A collection of plastic bottles ready for upcycling.",
+      "imageUrl": "https://images.unsplash.com/photo-1629227071576-e91767cc3024?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxwbGFzdGljJTIwYm90dGxlc3xlbnwwfHx8fDE3NTk0MzYxMDJ8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "plastic bottles"
+    },
+    {
+      "id": "giver-avatar-1",
+      "description": "Avatar for a user who gives items.",
+      "imageUrl": "https://images.unsplash.com/photo-1544005313-94ddf0286df2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxwZXJzb24lMjBwb3J0cmFpdHxlbnwwfHx8fDE3NTkzOTU3Nzd8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "person portrait"
+    },
+    {
+      "id": "maker-avatar-1",
+      "description": "Avatar for a maker/artisan.",
+      "imageUrl": "https://images.unsplash.com/photo-1557053908-4793c484d06f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHx3b21hbiUyMHBvcnRyYWl0fGVufDB8fHx8MTc1OTM5NjU1MXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "woman portrait"
+    },
+    {
+      "id": "maker-avatar-2",
+      "description": "Avatar for a maker/artisan.",
+      "imageUrl": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxtYW4lMjBwb3J0cmFpdHxlbnwwfHx8fDE3NTkzNjQ5MDN8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "man portrait"
+    },
+    {
+      "id": "buyer-avatar-1",
+      "description": "Avatar for a buyer.",
+      "imageUrl": "https://images.unsplash.com/photo-1484863137850-59afcfe05386?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxwZXJzb24lMjBzbWlsaW5nfGVufDB8fHx8MTc1OTQxNTUyM3ww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "person smiling"
+    }
+  ]
 }
