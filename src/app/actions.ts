@@ -1,3 +1,4 @@
+
 "use server";
 
 import { identifyMaterial } from "@/ai/flows/material-identification";
@@ -80,17 +81,18 @@ export async function createListingAction(prevState: any, formData: FormData) {
         };
     }
 
-    // Simulate a short delay to mimic database operation
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    // This part is for navigation, we don't need a real "database" operation for now
+    // It's important to keep the redirect logic
+    const listingType = validatedFields.data.listingType;
+    const destination = listingType === 'free' ? '/profile' : '/makers/feed';
     
-    const listingData = {
-        material: validatedFields.data.material,
-        description: validatedFields.data.description,
-        photoDataUri: validatedFields.data.photoDataUri,
-        listingType: validatedFields.data.listingType,
-    };
-    
-    return { ...prevState, error: null, listingCreated: true, material: validatedFields.data.material, listingData };
+    // The redirect function works by throwing an error, so it should not be in a try/catch block
+    // and it will stop the execution of this action.
+    redirect(destination);
+
+    // This part below will not be reached because of the redirect.
+    // We are returning a value here to satisfy TypeScript, but it's unreachable.
+    return { ...prevState, error: null, listingCreated: true, material: validatedFields.data.material };
 }
 
 // This action is now a placeholder as user creation is handled on the client.
