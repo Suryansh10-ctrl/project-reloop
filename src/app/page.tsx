@@ -145,7 +145,7 @@ export default function Home() {
                     <div className="flex items-center justify-between mt-4">
                       <span className="text-lg font-bold text-primary">₹{product.price.toFixed(2)}</span>
                        <Button variant="ghost" size="sm" asChild>
-                        <Link href="#">
+                        <Link href={`/marketplace/${product.id}`}>
                           View <ArrowRight className="ml-1 h-4 w-4" />
                         </Link>
                       </Button>

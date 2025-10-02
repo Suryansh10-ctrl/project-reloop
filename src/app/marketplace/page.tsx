@@ -87,7 +87,7 @@ export default function MarketplacePage() {
                     <div className="flex justify-between items-center w-full">
                       <p className="text-xl font-bold text-primary">₹{product.price.toFixed(2)}</p>
                       <Button asChild variant="secondary" size="sm">
-                        <Link href="#">
+                        <Link href={`/marketplace/${product.id}`}>
                           View Product <ArrowRight className="w-4 h-4 ml-2" />
                         </Link>
                       </Button>
