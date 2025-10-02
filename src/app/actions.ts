@@ -51,3 +51,33 @@ export async function getUpcyclingIdeasAction(material: string) {
         return { ideas: [], error: 'Failed to generate ideas. Please try again.' };
     }
 }
+
+const createListingSchema = z.object({
+  material: z.string(),
+  description: z.string().optional(),
+  photoDataUri: z.string(),
+  listingType: z.string(),
+});
+
+export async function createListingAction(prevState: any, formData: FormData) {
+    const validatedFields = createListingSchema.safeParse({
+        material: formData.get('material'),
+        description: formData.get('description'),
+        photoDataUri: formData.get('photoDataUri'),
+        listingType: formData.get('listingType'),
+    });
+
+    if (!validatedFields.success) {
+        return {
+            ...prevState,
+            error: "Invalid data for listing.",
+            listingCreated: false,
+        };
+    }
+
+    console.log("Creating listing with:", validatedFields.data);
+    // Here you would typically save the data to a database.
+    // For now, we'll just simulate success.
+    
+    return { ...prevState, error: null, listingCreated: true, material: validatedFields.data.material };
+}
