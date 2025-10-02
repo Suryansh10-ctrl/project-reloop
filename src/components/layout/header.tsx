@@ -14,11 +14,23 @@ import {
 import { Input } from '@/components/ui/input';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
-import { useUser } from '@/firebase';
-import { signOutAction } from '@/app/actions';
+import { useAuth, useUser } from '@/firebase';
+import { signOut } from 'firebase/auth';
+import { useRouter } from 'next/navigation';
 
 export default function Header() {
   const { user, isUserLoading } = useUser();
+  const auth = useAuth();
+  const router = useRouter();
+
+  const handleSignOut = async () => {
+    try {
+      await signOut(auth);
+      router.push('/login');
+    } catch (error) {
+      console.error("Error signing out: ", error);
+    }
+  };
 
   const navLinks = [
     { href: '/marketplace', label: 'Marketplace' },
@@ -108,11 +120,9 @@ export default function Header() {
               </DropdownMenuItem>
               <DropdownMenuItem>Settings</DropdownMenuItem>
               <DropdownMenuSeparator />
-              <form action={signOutAction}>
-                <DropdownMenuItem asChild>
-                  <button type="submit" className="w-full">Logout</button>
-                </DropdownMenuItem>
-              </form>
+              <DropdownMenuItem asChild>
+                  <button onClick={handleSignOut} className="w-full text-left">Logout</button>
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         ) : (

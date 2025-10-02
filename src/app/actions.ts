@@ -2,7 +2,6 @@
 
 import { identifyMaterial } from "@/ai/flows/material-identification";
 import { suggestUpcyclingIdeas } from "@/ai/flows/upcycling-idea-generator";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
 import { getSdks, initializeFirebase } from "@/firebase";
 import { z } from "zod";
@@ -96,33 +95,30 @@ export async function createListingAction(prevState: any, formData: FormData) {
     return { ...prevState, error: null, listingCreated: true, material: validatedFields.data.material, listingData };
 }
 
-const signUpSchema = z.object({
+const createUserSchema = z.object({
+  userId: z.string(),
   firstName: z.string(),
   lastName: z.string(),
   email: z.string().email(),
-  password: z.string().min(6),
   userType: z.enum(['Giver', 'Maker', 'Buyer']),
 });
 
-export async function signUpAction(prevState: any, formData: FormData) {
-  const validatedFields = signUpSchema.safeParse(Object.fromEntries(formData.entries()));
+export async function createUserAction(data: z.infer<typeof createUserSchema>) {
+  const validatedFields = createUserSchema.safeParse(data);
 
   if (!validatedFields.success) {
     return { success: false, error: "Invalid form data." };
   }
   
-  const { email, password, firstName, lastName, userType } = validatedFields.data;
-  const { auth, firestore } = getSdks(initializeFirebase().firebaseApp);
+  const { userId, email, firstName, lastName, userType } = validatedFields.data;
+  
+  // HACK: This is still technically calling a client-side function from the server
+  // but since it's just getting the initialized instance it works.
+  // A better solution would involve a dedicated admin SDK setup for server actions.
+  const { firestore } = getSdks(initializeFirebase().firebaseApp);
 
   try {
-    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    const user = userCredential.user;
-
-    await updateProfile(user, {
-      displayName: `${firstName} ${lastName}`
-    });
-
-    await setDoc(doc(firestore, "users", user.uid), {
+    await setDoc(doc(firestore, "users", userId), {
       email,
       firstName,
       lastName,
@@ -137,33 +133,10 @@ export async function signUpAction(prevState: any, formData: FormData) {
   }
 }
 
-const signInSchema = z.object({
-  email: z.string().email(),
-  password: z.string(),
-});
-
-export async function signInAction(prevState: any, formData: FormData) {
-  const validatedFields = signInSchema.safeParse(Object.fromEntries(formData.entries()));
-
-  if (!validatedFields.success) {
-    return { success: false, error: "Invalid email or password." };
-  }
-
-  const { auth } = getSdks(initializeFirebase().firebaseApp);
-  const { email, password } = validatedFields.data;
-  
-  try {
-    await signInWithEmailAndPassword(auth, email, password);
-    revalidatePath('/');
-    return { success: true, error: null };
-  } catch (error: any) {
-    return { success: false, error: error.message };
-  }
-}
 
 export async function signOutAction() {
-    const { auth } = getSdks(initializeFirebase().firebaseApp);
-    await signOut(auth);
+    // This is now just a placeholder. The actual sign-out happens on the client.
+    // We can use this to revalidate paths if needed after client-side sign-out.
     revalidatePath('/');
     redirect('/login');
 }
