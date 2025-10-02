@@ -6,10 +6,11 @@ import { materials as initialMaterials, users } from "@/lib/placeholder-data";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { MapPin } from "lucide-react";
+import { MapPin, Mail } from "lucide-react";
 import IdeaButton from "./idea-button";
 import { useEffect, useState } from "react";
 import { Material } from "@/lib/placeholder-data";
+import { Button } from "@/components/ui/button";
 
 
 export default function MakersFeedPage() {
@@ -98,7 +99,15 @@ export default function MakersFeedPage() {
                     <MapPin className="h-4 w-4" />
                     <span>{material.location}</span>
                   </div>
-                  <IdeaButton materialName={material.name} />
+                  <div className="w-full grid grid-cols-2 gap-2">
+                    <Button asChild variant="outline">
+                      <a href={`mailto:${giver?.email}?subject=Inquiry about ${material.name}`}>
+                        <Mail className="mr-2 h-4 w-4" />
+                        Contact Giver
+                      </a>
+                    </Button>
+                    <IdeaButton materialName={material.name} />
+                  </div>
                 </CardFooter>
               </Card>
             );

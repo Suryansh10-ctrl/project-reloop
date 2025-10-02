@@ -13,6 +13,7 @@ export type User = {
   id: string;
   name: string;
   avatarUrl: string;
+  email: string;
   impactScore: number;
   bio: string;
   type: 'Giver' | 'Maker' | 'Buyer';
@@ -59,6 +60,7 @@ export const users: User[] = [
     id: 'user-1',
     name: 'Anika Sharma',
     avatarUrl: findImage('maker-avatar-1').imageUrl,
+    email: 'anika.sharma@example.com',
     impactScore: 12.5,
     bio: 'I turn forgotten fabrics into fashion. Let\'s create something beautiful together!',
     type: 'Maker',
@@ -68,6 +70,7 @@ export const users: User[] = [
     id: 'user-2',
     name: 'Rohan Verma',
     avatarUrl: findImage('giver-avatar-1').imageUrl,
+    email: 'rohan.verma@example.com',
     impactScore: 5.2,
     bio: 'Decluttering my home, one item at a time. Happy to see my old things get a new life.',
     type: 'Giver',
@@ -77,6 +80,7 @@ export const users: User[] = [
     id: 'user-3',
     name: 'Priya Mehta',
     avatarUrl: findImage('buyer-avatar-1').imageUrl,
+    email: 'priya.mehta@example.com',
     impactScore: 7.8,
     bio: 'Conscious consumer looking for unique, sustainable pieces for my home.',
     type: 'Buyer',
@@ -86,6 +90,7 @@ export const users: User[] = [
     id: 'user-4',
     name: 'Vikram Singh',
     avatarUrl: findImage('maker-avatar-2').imageUrl,
+    email: 'vikram.singh@example.com',
     impactScore: 25.1,
     bio: 'Reclaimed wood and metal are my canvas. I build furniture that tells a story.',
     type: 'Maker',
