@@ -1,5 +1,9 @@
 'use client';
 
+// This page uses client-only navigation hooks (useSearchParams). Force dynamic
+// rendering to avoid prerendering / CSR bailout errors during Next.js builds.
+export const dynamic = 'force-dynamic';
+
 import Image from "next/image";
 import Link from "next/link";
 import { useSearchParams } from 'next/navigation';
