@@ -9,11 +9,9 @@ const nextConfig: NextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
-  experimental: {
-    // This is to allow cross-origin requests in the development environment.
-    // The URL is specific to the cloud workstation environment.
-    allowedDevOrigins: ["https://6000-firebase-studio-1759435477352.cluster-44kx2eiocbhe2tyk3zoyo3ryuo.cloudworkstations.dev"]
-  },
+  // This is to allow cross-origin requests in the development environment.
+  // The URL is specific to the cloud workstation environment.
+  allowedDevOrigins: ["https://6000-firebase-studio-1759435477352.cluster-44kx2eiocbhe2tyk3zoyo3ryuo.cloudworkstations.dev"],
   images: {
     remotePatterns: [
       {
@@ -29,8 +27,7 @@ const nextConfig: NextConfig = {
         pathname: '/**',
       },
       {
-        protocol: 'https'
-        ,
+        protocol: 'https',
         hostname: 'picsum.photos',
         port: '',
         pathname: '/**',
