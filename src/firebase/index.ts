@@ -32,6 +32,24 @@ export function initializeFirebase() {
   return getSdks(getApp());
 }
 
+// Development-only helper to log Firebase initialization details to aid debugging
+if (process.env.NODE_ENV !== 'production') {
+  try {
+    const app = getApps().length ? getApp() : undefined;
+    if (app) {
+      // eslint-disable-next-line no-console
+      console.debug('[firebase] initialized app options:', (app as any).options || {});
+    }
+
+    // Log emulator host if present in env (useful when running firebase emulators)
+    // eslint-disable-next-line no-console
+    console.debug('[firebase] FIRESTORE_EMULATOR_HOST:', process.env.FIRESTORE_EMULATOR_HOST || null);
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.debug('[firebase] debug log failed', e);
+  }
+}
+
 export function getSdks(firebaseApp: FirebaseApp) {
   return {
     firebaseApp,

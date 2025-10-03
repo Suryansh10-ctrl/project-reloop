@@ -30,14 +30,32 @@ export default function LoginPage() {
     e.preventDefault();
     setIsLoading(true);
     setError(null);
+    if (!auth) {
+      setError('Authentication not initialized. Please try again later.');
+      setIsLoading(false);
+      return;
+    }
     try {
       await signInWithEmailAndPassword(auth, email, password);
       router.push('/');
     } catch (error: any) {
-      if (error.code === 'auth/invalid-credential') {
-        setError('Invalid email or password. Please try again.');
-      } else {
-        setError(error.message);
+      const code = error?.code;
+      switch (code) {
+        case 'auth/wrong-password':
+        case 'auth/invalid-credential':
+          setError('Invalid email or password. Please try again.');
+          break;
+        case 'auth/user-not-found':
+          setError('No account found for that email.');
+          break;
+        case 'auth/invalid-email':
+          setError('Please enter a valid email address.');
+          break;
+        case 'auth/too-many-requests':
+          setError('Too many failed attempts. Please try again later.');
+          break;
+        default:
+          setError(error?.message ?? 'Login failed. Please try again.');
       }
     } finally {
       setIsLoading(false);
