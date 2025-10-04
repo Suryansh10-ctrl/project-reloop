@@ -17,6 +17,7 @@ const SuggestUpcyclingIdeasInputSchema = z.object({
     .describe(
       'A description of the material for which upcycling ideas are needed.'
     ),
+  customizationRequest: z.string().optional().describe('A user\'s specific request for customization.'),
 });
 export type SuggestUpcyclingIdeasInput = z.infer<
   typeof SuggestUpcyclingIdeasInputSchema
@@ -41,9 +42,13 @@ const suggestUpcyclingIdeasPrompt = ai.definePrompt({
   name: 'suggestUpcyclingIdeasPrompt',
   input: {schema: SuggestUpcyclingIdeasInputSchema},
   output: {schema: SuggestUpcyclingIdeasOutputSchema},
-  prompt: `You are a creative upcycling expert. Given a description of a waste material, you will generate a list of creative upcycling ideas for the material. Return at least three ideas.
+  prompt: `You are a creative upcycling expert. Given a description of a waste material, and an optional user request, you will generate a list of creative upcycling ideas. Return at least three ideas.
 
-Material Description: {{{materialDescription}}}`,
+Material Description: {{{materialDescription}}}
+{{#if customizationRequest}}
+User's Customization Request: {{{customizationRequest}}}
+{{/if}}
+`,
 });
 
 const suggestUpcyclingIdeasFlow = ai.defineFlow(

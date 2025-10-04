@@ -42,6 +42,7 @@ export type Material = {
   location: string;
   status: 'Free' | 'For Sale' | 'For Customization';
   price?: number;
+  customizationRequest?: string;
 };
 
 export type Order = {
@@ -165,6 +166,7 @@ export const materials: Material[] = [
         giverId: 'user-2',
         location: 'Indiranagar, Bangalore',
         status: 'For Customization',
+        customizationRequest: 'I want to turn these into a durable backpack for my laptop.',
     },
     {
         id: 'mat-3',

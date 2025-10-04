@@ -5,7 +5,7 @@ import { materials as initialMaterials, users as initialUsers, User } from "@/li
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Mail } from "lucide-react";
+import { MapPin, Mail, MessageSquareQuote } from "lucide-react";
 import IdeaButton from "./idea-button";
 import { useEffect, useState } from "react";
 import { Material } from "@/lib/placeholder-data";
@@ -38,7 +38,8 @@ export default function MakersFeedPage() {
           giverId: user.uid,
           location: "Your Location",
           status: newListing.listingType === 'free' ? 'Free' : newListing.listingType === 'sale' ? 'For Sale' : 'For Customization',
-          price: newListing.listingType === 'sale' ? parseFloat(newListing.price) : undefined
+          price: newListing.listingType === 'sale' ? parseFloat(newListing.price) : undefined,
+          customizationRequest: newListing.customizationRequest,
         };
 
         // Add to the top of the feed and prevent duplicates
@@ -104,6 +105,14 @@ export default function MakersFeedPage() {
                     </Badge>
                   </div>
                   <CardDescription className="line-clamp-3">{material.description}</CardDescription>
+                  {material.status === 'For Customization' && material.customizationRequest && (
+                    <div className="mt-3 p-3 bg-accent/10 rounded-md border border-accent/20">
+                      <p className="text-sm font-medium text-accent-foreground flex items-start">
+                        <MessageSquareQuote className="h-4 w-4 mr-2 mt-0.5 flex-shrink-0" />
+                        <span>"{material.customizationRequest}"</span>
+                      </p>
+                    </div>
+                  )}
                 </CardContent>
                 <CardFooter className="p-4 pt-0 flex flex-col items-start gap-4">
                   {giver && (
@@ -126,7 +135,7 @@ export default function MakersFeedPage() {
                         Contact Giver
                       </a>
                     </Button>
-                    <IdeaButton materialName={material.name} />
+                    <IdeaButton materialName={material.name} customizationRequest={material.customizationRequest} />
                   </div>
                 </CardFooter>
               </Card>

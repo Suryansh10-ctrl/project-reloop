@@ -52,12 +52,12 @@ export async function identifyMaterialAction(prevState: any, formData: FormData)
   }
 }
 
-export async function getUpcyclingIdeasAction(material: string) {
+export async function getUpcyclingIdeasAction(material: string, customizationRequest?: string) {
     try {
         if (!material) {
             return { ideas: [], error: 'Material description is required.' };
         }
-        const result = await suggestUpcyclingIdeas({ materialDescription: material });
+        const result = await suggestUpcyclingIdeas({ materialDescription: material, customizationRequest });
         return { ideas: result.upcyclingIdeas, error: null };
     } catch (error) {
         console.error(error);
@@ -71,6 +71,7 @@ const createListingSchema = z.object({
   photoDataUri: z.string(),
   listingType: z.string(),
   price: z.string().optional(),
+  customizationRequest: z.string().optional(),
 });
 
 export async function createListingAction(formData: FormData) {
@@ -80,6 +81,7 @@ export async function createListingAction(formData: FormData) {
         photoDataUri: formData.get('photoDataUri'),
         listingType: formData.get('listingType'),
         price: formData.get('price'),
+        customizationRequest: formData.get('customizationRequest'),
     });
 
     if (!validatedFields.success) {

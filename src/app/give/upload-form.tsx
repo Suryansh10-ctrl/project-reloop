@@ -60,6 +60,7 @@ export default function UploadForm() {
   const [preview, setPreview] = useState<string | null>(null);
   const [listingType, setListingType] = useState("free");
   const [price, setPrice] = useState("");
+  const [customizationRequest, setCustomizationRequest] = useState("");
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const dataUriInputRef = useRef<HTMLInputElement>(null);
@@ -88,6 +89,7 @@ export default function UploadForm() {
         photoDataUri: formData.get('photoDataUri'),
         listingType: formData.get('listingType'),
         price: formData.get('price'),
+        customizationRequest: formData.get('customizationRequest'),
     };
     sessionStorage.setItem('newListing', JSON.stringify(listingData));
     
@@ -209,6 +211,20 @@ export default function UploadForm() {
                         </div>
                     </div>
                 )}
+                 {listingType === 'customize' && (
+                    <div className="space-y-2">
+                        <Label htmlFor="customizationRequest">What do you want to make?</Label>
+                        <Textarea
+                            id="customizationRequest"
+                            name="customizationRequest"
+                            placeholder="e.g., 'Turn this into a tote bag' or 'I want a modern-looking plant stand'"
+                            value={customizationRequest}
+                            onChange={(e) => setCustomizationRequest(e.target.value)}
+                            required
+                            className="min-h-[100px]"
+                        />
+                    </div>
+                 )}
                 <ListingSubmitButton />
             </form>
           </AlertDescription>
