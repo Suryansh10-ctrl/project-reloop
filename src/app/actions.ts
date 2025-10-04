@@ -66,30 +66,18 @@ export async function getUpcyclingIdeasAction(material: string, customizationReq
 }
 
 const createListingSchema = z.object({
-  material: z.string(),
-  description: z.string().optional(),
-  photoDataUri: z.string(),
   listingType: z.string(),
-  price: z.string().optional(),
-  customizationRequest: z.string().optional(),
 });
 
 export async function createListingAction(formData: FormData) {
     const validatedFields = createListingSchema.safeParse({
-        material: formData.get('material'),
-        description: formData.get('description'),
-        photoDataUri: formData.get('photoDataUri'),
         listingType: formData.get('listingType'),
-        price: formData.get('price'),
-        customizationRequest: formData.get('customizationRequest'),
     });
 
     if (!validatedFields.success) {
         // This case should ideally be handled client-side
-        // but as a fallback, we can redirect with an error
-        // For now, we redirect to a safe page.
+        // but as a fallback, we can redirect to a safe page.
         redirect('/give');
-        return;
     }
     
     const { listingType } = validatedFields.data;

@@ -81,8 +81,8 @@ export default function UploadForm() {
       reader.readAsDataURL(file);
     }
   };
-
-  const handleFormSubmit = (formData: FormData) => {
+  
+  const handleFormSubmission = (formData: FormData) => {
     const listingData = {
         material: formData.get('material'),
         description: formData.get('description'),
@@ -92,10 +92,8 @@ export default function UploadForm() {
         customizationRequest: formData.get('customizationRequest'),
     };
     sessionStorage.setItem('newListing', JSON.stringify(listingData));
-    
-    // We are calling the action directly, not via useActionState here.
-    // The form element's action prop will handle the submission.
   };
+
 
   return (
     <>
@@ -168,7 +166,7 @@ export default function UploadForm() {
           <Sparkles className="h-4 w-4 text-primary" />
           <AlertTitle className="font-headline text-lg text-primary">Material Identified!</AlertTitle>
           <AlertDescription asChild>
-             <form action={createListingAction} onSubmit={(e) => handleFormSubmit(new FormData(e.currentTarget))} className="space-y-4">
+             <form action={createListingAction} onSubmit={(e) => handleFormSubmission(new FormData(e.currentTarget))} className="space-y-4">
                 <input type="hidden" name="material" value={identifyState.result.material} />
                 <input type="hidden" name="photoDataUri" value={preview || ''} />
                 <input type="hidden" name="description" value={descriptionRef.current?.value || ''} />
