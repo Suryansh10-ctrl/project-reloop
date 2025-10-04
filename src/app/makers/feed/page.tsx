@@ -5,11 +5,10 @@ import { materials as initialMaterials, users as initialUsers, User } from "@/li
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Mail, MessageSquareQuote } from "lucide-react";
+import { MapPin, MessageSquareQuote } from "lucide-react";
 import IdeaButton from "./idea-button";
 import { useEffect, useState } from "react";
 import { Material } from "@/lib/placeholder-data";
-import { Button } from "@/components/ui/button";
 import { useUser } from "@/firebase";
 
 
@@ -104,38 +103,43 @@ export default function MakersFeedPage() {
                       {material.status === 'For Sale' && material.price ? `₹${material.price}` : material.status}
                     </Badge>
                   </div>
-                  <CardDescription className="line-clamp-3">{material.description}</CardDescription>
-                  {material.status === 'For Customization' && material.customizationRequest && (
-                    <div className="mt-3 p-3 bg-accent/10 rounded-md border border-accent/20">
-                      <p className="text-sm font-medium text-accent-foreground flex items-start">
-                        <MessageSquareQuote className="h-4 w-4 mr-2 mt-0.5 flex-shrink-0" />
-                        <span>"{material.customizationRequest}"</span>
+                  
+                  {material.status === 'For Customization' && material.customizationRequest ? (
+                    <div className="mt-2 space-y-2">
+                      <p className="text-sm font-semibold text-accent-foreground flex items-center gap-2">
+                        <MessageSquareQuote className="h-4 w-4 flex-shrink-0" />
+                        Customization Idea:
                       </p>
+                      <p className="text-sm text-muted-foreground italic">"{material.customizationRequest}"</p>
                     </div>
+                  ) : (
+                    <CardDescription className="line-clamp-2">{material.description}</CardDescription>
                   )}
+
                 </CardContent>
                 <CardFooter className="p-4 pt-0 flex flex-col items-start gap-4">
-                  {giver && (
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <Avatar className="h-8 w-8">
-                        <AvatarImage src={giver.avatarUrl} alt={giver.name} />
-                        <AvatarFallback>{giver.name.charAt(0)}</AvatarFallback>
-                      </Avatar>
-                      <span>{giver.name}</span>
+                  <div className="flex justify-between w-full items-center">
+                    {giver && (
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <Avatar className="h-8 w-8">
+                            <AvatarImage src={giver.avatarUrl} alt={giver.name} />
+                            <AvatarFallback>{giver.name.charAt(0)}</AvatarFallback>
+                        </Avatar>
+                        <span>{giver.name}</span>
+                        </div>
+                    )}
+                     <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                        <MapPin className="h-4 w-4" />
+                        <span>{material.location}</span>
                     </div>
-                  )}
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <MapPin className="h-4 w-4" />
-                    <span>{material.location}</span>
                   </div>
-                  <div className="w-full grid grid-cols-2 gap-2">
-                    <Button asChild variant="outline">
-                      <a href={`mailto:${giver?.email}?subject=Inquiry about ${material.name}`}>
-                        <Mail className="mr-2 h-4 w-4" />
-                        Contact Giver
-                      </a>
-                    </Button>
-                    <IdeaButton materialName={material.name} customizationRequest={material.customizationRequest} />
+                  
+                  <div className="w-full">
+                    <IdeaButton 
+                        materialName={material.name} 
+                        customizationRequest={material.customizationRequest} 
+                        giver={giver}
+                    />
                   </div>
                 </CardFooter>
               </Card>
